@@ -34,6 +34,6 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
     @Override
     public boolean deleteTeacherById(String teacherId) {
-        return baseMapper.deleteById(teacherId) > 0;
+        return this.removeById(teacherId);
     }
 }

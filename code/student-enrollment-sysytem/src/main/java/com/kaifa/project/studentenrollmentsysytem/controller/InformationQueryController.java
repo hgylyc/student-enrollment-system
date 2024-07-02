@@ -39,6 +39,7 @@ public class InformationQueryController {
     public String addTeacher(@RequestBody Teacher teacher) {
         boolean res = teacherService.addTeacher(teacher);
         if (res) {
+
             return "redirect:/info/Ateacher";
         } else {
             return "Failed to add teacher";
