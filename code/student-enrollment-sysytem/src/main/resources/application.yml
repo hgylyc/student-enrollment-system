@@ -1,0 +1,12 @@
+server:
+  port: 8088
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:1339/test?characterEncoding=utf-8
+    username: root
+    password: 1339
+#热部署
+devtools:
+  restart:
+    enabled: true
