@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/student-enrollment-system-new.iml" filepath="$PROJECT_DIR$/.idea/student-enrollment-system-new.iml" />
+      <module fileurl="file://$PROJECT_DIR$/code/student-enrollment-sysytem/student-enrollment-sysytem.iml" filepath="$PROJECT_DIR$/code/student-enrollment-sysytem/student-enrollment-sysytem.iml" />
+    </modules>
+  </component>
+</project>
