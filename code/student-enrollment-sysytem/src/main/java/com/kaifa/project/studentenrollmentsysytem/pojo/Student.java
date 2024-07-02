@@ -52,4 +52,6 @@ public class Student {
     private String schoolCardPassword;
     @TableField("school_card_balance")
     private int schoolCardBalance;
+
+
 }
