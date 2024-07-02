@@ -8,11 +8,19 @@ import lombok.Data;
 @Data
 @TableName("account")
 public class Account {
-    @TableId
-    public int id;//学号
+    @TableId("id_number")
+    public String id;//学号
     @TableField("account_no")
     public String accountNo;
     public String password;
     public String identity;
     public String email;
+
+    public Account(String id, String username, String password, String role, String email) {
+        this.id = id;
+        this.accountNo = username;
+        this.password = password;
+        this.identity = role;
+        this.email = email;
+    }
 }
