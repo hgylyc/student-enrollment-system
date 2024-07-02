@@ -7,6 +7,6 @@ import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implements CourseService {
+public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implements CourseService{
 }
 
