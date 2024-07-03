@@ -1,8 +1,9 @@
 package com.kaifa.project.studentenrollmentsysytem.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
+@TableName("dormitory")
 @Data
 public class Dormitory {
     @TableField("area_no")
@@ -17,5 +18,7 @@ public class Dormitory {
     private Integer currentnumofstu;
     @TableField("gender")
     private String gender;
+    @TableField("academy")
+    private String academy;
 
 }
