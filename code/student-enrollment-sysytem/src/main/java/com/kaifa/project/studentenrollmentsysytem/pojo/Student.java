@@ -51,7 +51,9 @@ public class Student {
     @TableField("school_card_password")
     private String schoolCardPassword;
     @TableField("school_card_balance")
-    private int schoolCardBalance;
+    private Integer schoolCardBalance;
+    @TableField("academy")
+    private String academy;
 
 
 }
