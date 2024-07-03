@@ -2,14 +2,16 @@ package com.kaifa.project.studentenrollmentsysytem.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import lombok.Data;
 
+@Data
 public class CourseDTO {
     private String courseId; // 课程ID
     private String courseName;   // 课程名
     private String institution;//开课部门
     private String status; // 选课状态
     private String teacherName; // 教师姓名
-    private String time;//总课时
+    private int time;//总课时
     private String score; // 学分
     private int currentNumOfStu; // 现有选课人数
     private int ceilingOfPersonnel; // 人数上限
