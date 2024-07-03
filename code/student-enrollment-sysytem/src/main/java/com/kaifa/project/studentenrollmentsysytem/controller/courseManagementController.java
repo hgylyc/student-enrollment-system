@@ -21,13 +21,13 @@ public class courseManagementController {
     @Autowired
     private TeacherService teacherService;
 
-    @GetMapping
+    @GetMapping   //实现初始化
     public List<CourseDTO> initialClasses(){
         List<Course> list =courseService.list();
         return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
 
-    @PostMapping("coursecreate")
+    @PostMapping("coursecreate")    //创建课程
     public String courseCreate(HttpSession session,@RequestBody CourseCreate createCourse) {
         if (!session.getAttribute("role") .equals("teacher") ){
             return "role wrong";
@@ -45,7 +45,7 @@ public class courseManagementController {
         return course.getCourseId();
     }
 
-    @PostMapping("coursedelete")
+    @PostMapping("coursedelete")    //删除课程
     public String courseDelete(HttpSession session,@RequestParam("courseId") String courseId){
         System.out.println(session.getAttribute("role"));
         if (!session.getAttribute("role") .equals( "teacher")){
@@ -58,12 +58,9 @@ public class courseManagementController {
             return "fail";
     }
 
-    @PostMapping("courseselect")
-    public String courseSelect(@RequestParam("institution") String institution,
-                               @RequestParam("status") String status,
-                               @RequestParam("teacherName") String teacherName,
-                               @RequestParam("Filled") String Filled,
-                               @RequestParam("score") String score){
-        return "";
+    @PostMapping("courseselect")   //查询
+    public List<CourseDTO> courseSelect(@RequestBody CourseDTO courseDTO){
+        List<Course> list =courseService.findCourses(courseDTO);
+        return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
 }

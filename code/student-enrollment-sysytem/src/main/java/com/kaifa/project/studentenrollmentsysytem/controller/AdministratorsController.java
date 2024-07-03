@@ -18,7 +18,6 @@ import java.util.Map;
 public class AdministratorsController {
     //今日报道人数，报道开始天数，在线管理员
     //报道人数浮动
-
     @Autowired
     private TeacherService teacherService;
     @Autowired

@@ -11,14 +11,14 @@ public class CourseDTO {
     private String institution;//开课部门
     private String status; // 选课状态
     private String teacherName; // 教师姓名
-    private int time;//总课时
+    private Integer time;//总课时
     private String score; // 学分
     private int currentNumOfStu; // 现有选课人数
     private int ceilingOfPersonnel; // 人数上限
-    private boolean filled;//是否选满
+    private Boolean filled;//是否选满
     private String classRoomNo; // 教室号（非必要）
 
-
+    public CourseDTO() {}
     public CourseDTO(Course course) {
         this.courseId = course.getCourseId();
         this.courseName = course.getCourseName();

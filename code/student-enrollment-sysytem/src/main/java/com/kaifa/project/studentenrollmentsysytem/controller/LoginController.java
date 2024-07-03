@@ -42,7 +42,7 @@ public class LoginController {
     }
 
     @PostMapping("activate")
-    public String activat(@RequestParam("studentId") String studentId,
+    public String activate(@RequestParam("studentId") String studentId,
                           @RequestParam("username") String username,
                           @RequestParam("idNumber") String idNumber,
                           @RequestParam("password") String password,

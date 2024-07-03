@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.mapper.CourseMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.StudentMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
+import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import java.util.List;
 public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implements CourseService{
     @Autowired
     private StudentMapper studentMapper;
+    @Autowired
+    private CourseMapper courseMapper;
     @Override
     public List<Course> getCoursesByStudentAcademy(String studentId) {
         // 获取学生信息
@@ -66,8 +69,6 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         return ceiling <= currentNum;
     }
 
-
-
     @Override
     public void updateNumOfStu(String courseId) {
         Course course = baseMapper.selectById(courseId);
@@ -97,6 +98,10 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
             queryWrapper.eq("course_type",courseType);
         }
         return baseMapper.selectList(queryWrapper);
+    }
+    @Override
+    public List<Course> findCourses(CourseDTO filter) {
+        return courseMapper.selectCourses(filter);
     }
 
 
