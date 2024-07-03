@@ -17,10 +17,8 @@ import java.util.Map;
 @RequestMapping("/administrator")
 public class AdministratorsController {
     //今日报道人数，报道开始天数，在线管理员
-    //报道环节人数，信息填写，宿舍确认，线上缴费，校园卡申请，完成
     //报道人数浮动
-    //生源地分布
-    //学院报道情况分布
+
     @Autowired
     private TeacherService teacherService;
     @Autowired
@@ -32,10 +30,23 @@ public class AdministratorsController {
 
     @GetMapping("/data")
     public Map<String, Object> data() {
+
         Map<String, Object> response = new HashMap<>();
+        //报道人数浮动
+        List<Map<String, Object>> timeNode = studentService.getTimeNode();
+        response.put("timeNode",timeNode);
+        //报道环节完成人数，state1,state2,state2
+        List<Map<String, Object>> processState = studentService.getProcessState();
+        response.put("processState",processState);
+        //生源地分布
+        List<Map<String, Object>> NativeSpace = studentService.getNativeSpace();
+        response.put("NativeSpace",NativeSpace);
         //总报道人数
         Integer totalNumOfArrivedStu = instituteService.getTotalNumOfArrivedStu();
         response.put("totalNumOfArrivedStu", totalNumOfArrivedStu);
+        //学院报道情况分布
+        List<Map<String, Object>> studentByInstitute = instituteService.getStudentByInstitute();
+        response.put("studentByInstitute",studentByInstitute);
         //总宿舍床位
         Integer maxNumOfbed = dormitoryService.getMaxNumOfbed();
         response.put("maxNumOfbed", maxNumOfbed);

@@ -8,6 +8,9 @@ import com.kaifa.project.studentenrollmentsysytem.service.InstituteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
 @Service
 public class InstituteServiceImpl extends ServiceImpl<InstituteMapper, Institute> implements InstituteService {
     @Autowired
@@ -15,4 +18,6 @@ public class InstituteServiceImpl extends ServiceImpl<InstituteMapper, Institute
     public Integer getTotalNumOfArrivedStu() {
         return instituteMapper.getTotalNumOfArrivedStu();
     }
+
+    public List<Map<String, Object>> getStudentByInstitute(){return instituteMapper.getStudentByInstitute(); };
 }
