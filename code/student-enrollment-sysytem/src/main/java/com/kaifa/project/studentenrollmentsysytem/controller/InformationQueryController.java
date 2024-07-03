@@ -36,11 +36,18 @@ public class InformationQueryController {
     }
     //管理端添加教师信息
     @PostMapping("/Ateacher")
-    public String addTeacher(@RequestBody Teacher teacher) {
-        boolean res = teacherService.addTeacher(teacher);
+    public String addTeacher(@RequestParam("teacherId") String teacherId,
+                             @RequestParam("teacherName") String teacherName,
+                             @RequestParam("introduction") String introduction,
+                             @RequestParam("figureUrl") String figureUrl) {
+        Teacher t = new Teacher();
+        t.setTeacherId(teacherId);
+        t.setTeacherName(teacherName);
+        t.setIntroduction(introduction);
+        t.setFigureUrl(figureUrl);
+        boolean res = teacherService.addTeacher(t);
         if (res) {
-
-            return "redirect:/info/Ateacher";
+            return "redirect:/Info/Ateacher";
         } else {
             return "Failed to add teacher";
         }
@@ -56,13 +63,28 @@ public class InformationQueryController {
         }
     }
     // 管理端更新教师信息
-    @PutMapping("/admin/teacher")
-    public String updateTeacher(@RequestBody Teacher teacher) {
-        boolean result = teacherService.updateTeacher(teacher);
-        if (result) {
-            return "redirect:/info/teachers";
+    @PutMapping("/Ateacher")
+    public String updateTeacher(@RequestParam("teacherId") String teacherId,
+                                @RequestParam("teacherName") String teacherName,
+                                @RequestParam("introduction") String introduction,
+                                @RequestParam("figureUrl") String figureUrl) {
+        // 获取现有的教师信息
+        Teacher existingTeacher = teacherService.getById(teacherId);
+        if (existingTeacher != null) {
+            // 更新相关字段
+            existingTeacher.setTeacherName(teacherName);
+            existingTeacher.setIntroduction(introduction);
+            existingTeacher.setFigureUrl(figureUrl);
+
+            // 保存更新
+            boolean res = teacherService.updateTeacher(existingTeacher);
+            if (res) {
+                return "redirect:/Info/Ateacher";
+            } else {
+                return "Failed to update teacher";
+            }
         } else {
-            return "Failed to update teacher";
+            return "Teacher not found";
         }
     }
 
