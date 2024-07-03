@@ -19,15 +19,16 @@ public class CourseSelectionController {
 
     //初始化课程列表
     @GetMapping("/course/{studentId}")
-    public List<Course> getCourseForStu(@PathVariable("studentId") String studentID){
-        return courseService.getCoursesByStudentAcademy(studentID);
+    public List<Course> getCourseForStu(@PathVariable String studentID) {
+        List<Course> courses = courseService.getCoursesByStudentAcademy(studentID);
+        System.out.println("返回的课程数量: " + courses.size());
+        return courses;
     }
     //选课确认
     @PostMapping("/selectCourse")
     public String selectCourse(
             @RequestParam("studentId") String studentId,
-            @RequestParam("courseId") String courseId,
-            @RequestParam("courseName") String courseName){
+            @RequestParam("courseId") String courseId){
         boolean isFull = courseService.isCourseFull(courseId);
         boolean isAlreadySelected = student_courseService.isCourseSelectByStu(studentId,courseId);
         if(isFull){

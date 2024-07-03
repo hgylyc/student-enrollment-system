@@ -10,6 +10,7 @@ import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,15 +19,54 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     private StudentMapper studentMapper;
     @Override
     public List<Course> getCoursesByStudentAcademy(String studentId) {
+        // 获取学生信息
         Student student = studentMapper.selectById(studentId);
+        if (student == null) {
+            System.out.println("学生ID " + studentId + " 不存在");
+            return new ArrayList<>();
+        }
+
         String academy = student.getAcademy();
-        return baseMapper.selectList(new QueryWrapper<Course>().likeRight("course_id", academy));
+        System.out.println("学生ID: " + studentId + ", 学院: " + academy);
+
+        // 使用QueryWrapper进行条件查询
+        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeRight("course_id", academy);
+
+        List<Course> matchingCourses = baseMapper.selectList(queryWrapper);
+        System.out.println("匹配的课程数量: " + matchingCourses.size());
+
+        return matchingCourses;
     }
+
+
     @Override
     public boolean isCourseFull(String courseId) {
+
+
+        // 获取课程信息
         Course course = baseMapper.selectById(courseId);
-        return course.getCeilingOfPersonnel() <= course.getCurrentNumOfStu();
+
+        // 检查是否成功获取了课程对象
+        if (course == null) {
+            System.out.println("课程ID " + courseId + " 不存在");
+            return false; // 或者根据需求返回其他值，表示课程未找到
+        }
+
+        // 检查课程人数信息是否为null
+        Integer ceiling = course.getCeilingOfPersonnel();
+        Integer currentNum = course.getCurrentNumOfStu();
+
+        if (ceiling == null || currentNum == null) {
+            System.out.println("课程ID " + courseId + " 的人数信息不完整");
+            return false; // 或者根据需求返回其他值，表示课程信息不完整
+        }
+
+        // 进行人数比较
+        return ceiling <= currentNum;
     }
+
+
 
     @Override
     public void updateNumOfStu(String courseId) {

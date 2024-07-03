@@ -33,6 +33,7 @@ public class Course {
 
     @TableField("introduction")
     private String introduction; // 课程简介
+    public Course(){};
 
     public Course(CourseCreate courseCreate){
         this.courseName=courseCreate.courseName;
