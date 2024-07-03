@@ -1,12 +1,14 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student_course;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import com.kaifa.project.studentenrollmentsysytem.service.Student_courseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -17,45 +19,48 @@ public class CourseSelectionController {
     @Autowired
     private Student_courseService student_courseService;
 
-    //初始化课程列表
-    @GetMapping("/course/{studentId}")
-    public List<Course> getCourseForStu(@PathVariable String studentID) {
-        List<Course> courses = courseService.getCoursesByStudentAcademy(studentID);
+    // 初始化课程列表
+    @GetMapping("/course")
+    public List<Course> getCourseForStu(HttpSession session) {
+        String studentId = (String) session.getAttribute("username");
+        List<Course> courses = courseService.getCoursesByStudentAcademy(studentId);
         System.out.println("返回的课程数量: " + courses.size());
         return courses;
     }
-    //选课确认
+    // 选课确认
     @PostMapping("/selectCourse")
-    public String selectCourse(
-            @RequestParam("studentId") String studentId,
-            @RequestParam("courseId") String courseId){
+    public String selectCourse(HttpSession session, @RequestParam("courseId") String courseId) {
+        String s = (String) session.getAttribute("username");
+        //return s;
         boolean isFull = courseService.isCourseFull(courseId);
-        boolean isAlreadySelected = student_courseService.isCourseSelectByStu(studentId,courseId);
-        if(isFull){
+        boolean isAlreadySelected = student_courseService.isCourseSelectByStu(s, courseId);
+        if (isFull) {
             return "Course is already full";
         } else if (isAlreadySelected) {
             return "You have already selected this course";
         } else {
-            Student_course sc =new Student_course();
-            sc.setStudentId(studentId);
+            Student_course sc = new Student_course();
+            sc.setStudentId(s);
             sc.setCourseId(courseId);
             student_courseService.save(sc);
             courseService.updateNumOfStu(courseId);
+            System.out.println("StudentID:"+s);
             return "Course selected successfully";
         }
     }
-    //通过课程名称和课程ID检索课程
+
+    // 通过课程名称和课程ID检索课程
     @GetMapping("/filter")
     public List<Course> filterCoursesByCourseNameAndId(
             @RequestParam(required = false) String courseName,
             @RequestParam(required = false) String courseId){
-        return courseService.filterCoursesByCourseNameAndId(courseName,courseId);
+        return courseService.filterCoursesByCourseNameAndId(courseName, courseId);
     }
-    //课程类型过滤课程列表
+
+    // 课程类型过滤课程列表
     @GetMapping("/filterByType")
     public List<Course> filterCoursesByType(
-            @RequestParam(required = false) String courseType
-    ){
+            @RequestParam(required = false) String courseType){
         return courseService.filterCoursesByType(courseType);
     }
 }

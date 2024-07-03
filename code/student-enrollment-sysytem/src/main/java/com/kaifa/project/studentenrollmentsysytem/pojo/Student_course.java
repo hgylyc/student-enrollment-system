@@ -11,4 +11,12 @@ public class Student_course {
     private String courseId;
     @TableField("student_id")
     private String studentId;
+
+    public void setCourseId(String courseId) {
+        this.courseId = courseId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
 }

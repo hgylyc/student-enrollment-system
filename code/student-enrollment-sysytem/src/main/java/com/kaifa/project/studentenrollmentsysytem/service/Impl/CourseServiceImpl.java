@@ -50,6 +50,7 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         // 获取课程信息
         Course course = baseMapper.selectById(courseId);
 
+
         // 检查是否成功获取了课程对象
         if (course == null) {
             System.out.println("课程ID " + courseId + " 不存在");
