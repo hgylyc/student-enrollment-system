@@ -45,4 +45,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     public List<Map<String, Object>> getTimeNode(){
         return studentMapper.getTimeNode();
     };
+    public List<Map<String, Object>> selectStateById(String stuId){
+        return studentMapper.selectStateById(stuId);
+    };
 }
