@@ -8,7 +8,7 @@ import lombok.Data;
 @TableName("student_course")
 public class Student_course {
     @TableField("course_id")
-    private String courseid;
+    private String courseId;
     @TableField("student_id")
-    private String studentid;
+    private String studentId;
 }

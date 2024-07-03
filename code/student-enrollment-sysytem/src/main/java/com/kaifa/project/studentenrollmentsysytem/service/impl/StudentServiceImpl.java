@@ -1,4 +1,4 @@
-package com.kaifa.project.studentenrollmentsysytem.service.impl;
+package com.kaifa.project.studentenrollmentsysytem.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+
 
 @Service
 public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> implements StudentService {
@@ -33,4 +35,14 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
                 .eq(Dormitory::getGender, gender);
         return dormitoryMapper.selectList(queryWrapper);
     }
+    private StudentMapper studentMapper;
+    public List<Map<String, Object>> getNativeSpace(){
+        return studentMapper.getNativeSpace();
+    };
+    public List<Map<String, Object>> getProcessState(){
+        return studentMapper.getProcessState();
+    };
+    public List<Map<String, Object>> getTimeNode(){
+        return studentMapper.getTimeNode();
+    };
 }

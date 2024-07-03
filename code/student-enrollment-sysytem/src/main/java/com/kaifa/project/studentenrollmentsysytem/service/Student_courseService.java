@@ -6,4 +6,5 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface Student_courseService extends IService<Student_course> {
+    boolean isCourseSelectByStu(String studentId,String courseId);
 }
