@@ -106,5 +106,31 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     }
 
 
+    public boolean updateCourse(Course course) {
+        Course existingCourse = courseMapper.selectById(course.getCourseId());
+        if (existingCourse != null) {
+            boolean isUpdated = false;
+            if (course.getStatus() != null) {
+                existingCourse.setStatus(course.getStatus());
+                isUpdated = true;
+            }
+            if (course.getTime() != null) {
+                existingCourse.setTime(course.getTime());
+                isUpdated = true;
+            }
+            if (course.getClassRoomNo() != null) {
+                existingCourse.setClassRoomNo(course.getClassRoomNo());
+                isUpdated = true;
+            }
+            if (isUpdated) {
+                courseMapper.updateById(existingCourse);
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
 }
 

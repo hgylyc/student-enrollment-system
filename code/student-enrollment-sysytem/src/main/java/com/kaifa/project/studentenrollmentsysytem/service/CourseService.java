@@ -14,4 +14,6 @@ public interface CourseService extends IService <Course>{
     List<Course> filterCoursesByType(String courseType);
     List<Course> findCourses(CourseDTO filter);
 
+    public boolean updateCourse(Course course);
+
 }

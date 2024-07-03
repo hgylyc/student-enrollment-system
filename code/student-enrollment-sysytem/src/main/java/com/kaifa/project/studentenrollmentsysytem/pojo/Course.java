@@ -33,7 +33,7 @@ public class Course {
 
     @TableField("introduction")
     private String introduction; // 课程简介
-    private int time;//总课时
+    private Integer time;//总课时
     public Course(){};
 
     public Course(CourseCreate courseCreate){

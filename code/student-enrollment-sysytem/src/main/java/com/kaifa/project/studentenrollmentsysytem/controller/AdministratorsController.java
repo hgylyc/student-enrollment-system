@@ -56,6 +56,5 @@ public class AdministratorsController {
         List<Map<String, Object>> studentCountByArea = dormitoryService.getStudentCountByArea();
         response.put("studentCountByArea", studentCountByArea);
         return response;
-
     }
 }
