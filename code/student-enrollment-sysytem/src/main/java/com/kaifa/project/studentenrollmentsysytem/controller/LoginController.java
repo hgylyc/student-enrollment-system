@@ -31,7 +31,7 @@ public class LoginController {
         Account account= accountService.getById(username);
         if(account==null)
             return "null";
-        else if(account.password!=password)
+        else if(!account.password.equals(password))
             return "password wrong";
         else
         {

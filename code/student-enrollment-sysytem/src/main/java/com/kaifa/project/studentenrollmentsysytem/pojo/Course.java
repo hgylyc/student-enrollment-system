@@ -33,70 +33,21 @@ public class Course {
 
     @TableField("introduction")
     private String introduction; // 课程简介
+    private String time;//总课时
     public Course(){};
 
     public Course(CourseCreate courseCreate){
         this.courseName=courseCreate.courseName;
         this.teacherName=courseCreate.teacherName;
         this.teacherId=courseCreate.teacherId;
-
-        String str=null;
-        switch (courseCreate.institution) {
-            case "计算机学院":
-                str+="C";
-                break;
-            case "理学院":
-                str+="S";
-                break;
-            case "管理学院":
-                str+="M";
-                break;
-            default:
-                break;
-        }
-
-        switch (courseCreate.courseType) {
-            case "必修课":
-                str+="1";
-                break;
-            case "选修课":
-                str+="2";
-                break;
-            case "实验课":
-                str+="4";
-                break;
-            default:
-                break;
-        }
-
+        String str="";
+        char a=Mapping.mapCollege(courseCreate.institution);
+        char b=Mapping.mapCourseType(courseCreate.courseType);
+        char c=Mapping.mapSemester(courseCreate.semester);
+        str+=a;
+        str+=b;
         str+=courseCreate.identificationCode;
-
-        switch (courseCreate.semester) {
-            case "大一春季学期":
-                str+="A";
-                break;
-            case "大一秋季学期":
-                str+="B";
-                break;
-            case "大二春季学期":
-                str+="C";
-                break;
-            case "大二秋季学期":
-                str+="D";
-                break;
-            case "大三春季学期":
-                str+="E";
-                break;
-            case "大三秋季学期":
-                str+="F";
-                break;
-            case "大四春季学期":
-                str+="G";
-                break;
-            case "大四秋季学期":
-                str+="H";
-                break;
-        }
+        str+=c;
         this.courseId=str;
         this.ceilingOfPersonnel=courseCreate.ceilingOfPersonnel;
         this.courseType=courseCreate.courseType;
