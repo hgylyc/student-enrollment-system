@@ -7,7 +7,7 @@ import java.util.List;
 public interface CourseService extends IService <Course>{
     List<Course> getCoursesByStudentAcademy(String studentId);
     boolean isCourseFull(String courseId);
-    void updateNumOfStu(String courseId, boolean increment);
+    void updateNumOfStu(String courseId);
     List<Course> filterCoursesByCourseNameAndId(String courseName, String courseId);
     List<Course> filterCoursesByType(String courseType);
 }

@@ -29,10 +29,9 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     }
 
     @Override
-    public void updateNumOfStu(String courseId, boolean increment) {
+    public void updateNumOfStu(String courseId) {
         Course course = baseMapper.selectById(courseId);
-        int currentNum = course.getCurrentNumOfStu();
-        course.setCurrentNumOfStu(increment ? currentNum + 1 : currentNum - 1);
+        course.setCurrentNumOfStu(course.getCurrentNumOfStu() + 1);
         baseMapper.updateById(course);
     }
 
