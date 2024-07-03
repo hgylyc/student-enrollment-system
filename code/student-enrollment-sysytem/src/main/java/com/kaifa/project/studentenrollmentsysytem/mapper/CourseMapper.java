@@ -27,6 +27,9 @@ public interface CourseMapper extends BaseMapper<Course> {
                 if (filter.getCourseName() != null && !filter.getCourseName().isEmpty()) {
                     WHERE("course_name = #{filter.courseName}");
                 }
+                if (filter.getCourseType() != null && !filter.getCourseType().isEmpty()) {
+                    WHERE("course_type = #{filter.courseType}");
+                }
                 if (filter.getInstitution() != null && !filter.getInstitution().isEmpty()) {
                     char ch = Mapping.mapCollege(filter.getInstitution());
                     String str = ch + "%";

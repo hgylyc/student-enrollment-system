@@ -8,6 +8,7 @@ import lombok.Data;
 public class CourseDTO {
     private String courseId; // 课程ID
     private String courseName;   // 课程名
+    private String courseType;//课程类型
     private String institution;//开课部门
     private String status; // 选课状态
     private String teacherName; // 教师姓名
@@ -18,8 +19,10 @@ public class CourseDTO {
     private Boolean filled;//是否选满
     private String classRoomNo; // 教室号（非必要）
 
+
     public CourseDTO() {}
     public CourseDTO(Course course) {
+        this.courseType = course.getCourseType();
         this.courseId = course.getCourseId();
         this.courseName = course.getCourseName();
         this.teacherName = course.getTeacherName();

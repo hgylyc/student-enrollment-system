@@ -1,6 +1,7 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
+import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student_course;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/CourseSel")
@@ -62,5 +64,10 @@ public class CourseSelectionController {
     public List<Course> filterCoursesByType(
             @RequestParam(required = false) String courseType){
         return courseService.filterCoursesByType(courseType);
+    }
+    @PostMapping("courseselect")   //查询
+    public List<CourseDTO> courseSelect(@RequestBody CourseDTO courseDTO){
+        List<Course> list =courseService.findCourses(courseDTO);
+        return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
 }

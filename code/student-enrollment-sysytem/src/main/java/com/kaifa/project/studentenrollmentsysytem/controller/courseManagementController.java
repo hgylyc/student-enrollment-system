@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/coursemanage")
-public class courseManagementController {
+public class CourseManagementController {
     @Autowired
     private CourseService courseService;
     @Autowired
