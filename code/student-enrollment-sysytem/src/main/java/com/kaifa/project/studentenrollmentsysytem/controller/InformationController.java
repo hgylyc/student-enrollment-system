@@ -2,8 +2,10 @@ package com.kaifa.project.studentenrollmentsysytem.controller;
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
+import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -12,8 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-
-
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +35,8 @@ public class InformationController {
     private StudentService studentService;
     @Autowired
     private DormitoryService dormitoryService;
+    @Autowired
+    private TeacherService teacherService;
     @PostMapping ("dormitories")
     public Result dormitoriesList (HttpSession session, Model model){
         String studentId = (String) session.getAttribute("username");
@@ -134,8 +136,10 @@ public class InformationController {
             response.put("status", "file_null");
             return response;
         }
-        String UPLOAD_DIR="E:/Temp/picture";
-        String url=UPLOAD_DIR+file.getName();
+        String UPLOAD_DIR="E:/Temp/picture/";
+        String url=UPLOAD_DIR+file.getOriginalFilename();
+        System.out.println(file.getName());
+        System.out.println(url);
         try {
             // 获取文件名
             String fileName = file.getOriginalFilename();
@@ -145,6 +149,7 @@ public class InformationController {
             file.transferTo(dest);
             Student student = studentService.getStudentById(username);
             student.setFigureUrl(url);
+            studentService.updateById(student);
             response.put("status", "success");
             return response;
         } catch (IOException e) {
@@ -154,28 +159,34 @@ public class InformationController {
         }
     }
 
-    @GetMapping("download")
-    public ResponseEntity<Resource> downloadFile() {
-        System.out.println("begin");
-        String UPLOAD_DIR="E:/Temp/picture/a.png";
-        try {
-            // 构建文件路径
-            Path filePath = Paths.get(UPLOAD_DIR).normalize();
-            File file = filePath.toFile();
-            String filename=file.getName();
-            if (!file.exists()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-            // 读取文件内容
-            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(filePath));
-            return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                    .body(resource);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+    @GetMapping("imageget")
+    public ResponseEntity<byte[]> getImage(HttpSession session) throws IOException {
+        String id = (String)session.getAttribute("username");
+        String role=(String) session.getAttribute("role");
+        String url =new String();
+        if(role.equals("teacher"))
+        {
+            Teacher teacher=teacherService.getById(id);
+            url=teacher.getFigureUrl();
         }
+        else {
+            Student student=studentService.getStudentById(id);
+            url=student.getFigureUrl();
+        }
+        // 指定图片文件路径
+        Path imagePath = Paths.get(url);
+        // 读取图片文件为字节数组
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+        // 动态检测文件的MIME类型
+        String mimeType = Files.probeContentType(imagePath);
+        if (mimeType == null) {
+            mimeType = "application/octet-stream"; // 默认类型
+        }
+        // 设置响应头
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(mimeType));
+        headers.setContentLength(imageBytes.length);
+        return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
 
 }
