@@ -36,6 +36,11 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     public void updateStudent(Student student) {
         studentMapper.updateById(student);
     }
+    @Override
+    public boolean updateStudentInfo(Student student) {
+        // 更新学生信息到数据库
+        return this.updateById(student);
+    }
     private StudentMapper studentMapper;
     public List<Map<String, Object>> getNativeSpace(){
         return studentMapper.getNativeSpace();
