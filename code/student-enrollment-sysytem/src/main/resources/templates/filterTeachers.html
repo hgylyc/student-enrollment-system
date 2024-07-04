@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Filtered Teachers</title>
+</head>
+<body>
+
+<h2>Filtered Teachers</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>Teacher ID</th>
+    <th>Teacher Name</th>
+    <th>Academy</th>
+    <th>Title</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="teacher : ${teachers}">
+    <td th:text="${teacher.teacherId}">Teacher ID</td>
+    <td th:text="${teacher.teacherName}">Teacher Name</td>
+    <td th:text="${teacher.tacademy}">Academy</td>
+    <td th:text="${teacher.title}">Title</td>
+  </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

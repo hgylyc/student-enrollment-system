@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Information Management</title>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid black;
+    }
+    th, td {
+      padding: 15px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Teacher Information Management</h2>
+
+<!-- Filter and search bar -->
+<div>
+  <label for="academyFilter">Academy:</label>
+  <select id="academyFilter">
+    <!-- Options will be populated dynamically -->
+  </select>
+
+  <label for="teacherIdSearch">Teacher ID:</label>
+  <input type="text" id="teacherIdSearch" placeholder="Search by Teacher ID">
+
+  <label for="teacherNameSearch">Teacher Name:</label>
+  <input type="text" id="teacherNameSearch" placeholder="Search by Teacher Name">
+
+  <button onclick="filterTeachers()">Search</button>
+  <button onclick="showAddTeacherForm()">Add New Teacher</button>
+</div>
+
+<!-- Teacher information table -->
+<table>
+  <thead>
+  <tr>
+    <th>Teacher ID</th>
+    <th>Teacher Name</th>
+    <th>Academy</th>
+    <th>Title</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody id="teacherList">
+  <!-- Rows will be populated dynamically -->
+  </tbody>
+</table>
+
+<!-- Add/Edit Teacher Form -->
+<div id="teacherForm" style="display:none;">
+  <h3 id="formHeadTitle">Add/Edit Teacher</h3>
+  <form id="teacherFormContent">
+    <label for="formTeacherId">Teacher ID:</label>
+    <input type="text" id="formTeacherId"><br>
+    <label for="formTeacherName">Teacher Name:</label>
+    <input type="text" id="formTeacherName"><br>
+    <label for="formAcademy">Academy:</label>
+    <input type="text" id="formAcademy"><br>
+    <label for="formTitle">Title:</label>
+    <input type="text" id="formTitle"><br>
+    <label for="formEmail">Email:</label>
+    <input type="text" id="formEmail"><br>
+    <label for="formIntroduction">Introduction:</label>
+    <textarea id="formIntroduction"></textarea><br>
+    <label for="formFigureUrl">Figure URL:</label>
+    <input type="text" id="formFigureUrl"><br>
+    <button type="button" onclick="saveTeacher()">Save</button>
+    <button type="button" onclick="hideForm()">Cancel</button>
+  </form>
+</div>
+
+<script>
+  $(document).ready(function() {
+    // Load all teachers on page load
+    loadAllTeachers();
+    loadAcademies();
+  });
+
+  function loadAllTeachers() {
+    $.ajax({
+      url: '/Info/Adm/Ateacher',
+      method: 'GET',
+      success: function(data) {
+        populateTeacherTable(data);
+      },
+      error: function(error) {
+        alert('Failed to load teacher information.');
+        console.error('Error details:', error);  // 输出错误详情到控制台
+      }
+    });
+  }
+
+  function loadAcademies() {
+    // This is a placeholder. You should replace it with actual AJAX call to load academies.
+    let academies = ["Academy 1", "Academy 2", "Academy 3"];
+    let academyFilter = $('#academyFilter');
+    academyFilter.empty();
+    academies.forEach(function(academy) {
+      academyFilter.append(new Option(academy, academy));
+    });
+  }
+
+  function populateTeacherTable(teachers) {
+    let teacherList = $('#teacherList');
+    teacherList.empty();
+    if (teachers && teachers.length > 0) {
+      teachers.forEach(function(teacher) {
+        teacherList.append(`
+                <tr>
+                    <td>${teacher.teacherId}</td>
+                    <td>${teacher.teacherName}</td>
+                    <td>${teacher.tacademy}</td>
+                    <td>${teacher.title}</td>
+                    <td>
+                        <button onclick="showTeacherDetails('${teacher.teacherId}')">Details</button>
+                        <button onclick="showEditTeacherForm('${teacher.teacherId}')">Edit</button>
+                        <button onclick="deleteTeacher('${teacher.teacherId}')">Delete</button>
+                    </td>
+                </tr>
+            `);
+      });
+    } else {
+      teacherList.append('<tr><td colspan="5">No teachers found.</td></tr>');
+    }
+  }
+
+  function filterTeachers() {
+    let teacherId = $('#teacherIdSearch').val();
+    let teacherName = $('#teacherNameSearch').val();
+    let academy = $('#academyFilter').val();
+
+    $.ajax({
+      url: '/Info/Adm/filterTeachers',
+      method: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({ teacherId: teacherId, teacherName: teacherName, tacademy: academy }),
+      success: function(data) {
+        populateTeacherTable(data);
+      },
+      error: function(error) {
+        alert('Failed to filter teachers.');
+      }
+    });
+  }
+
+  function showAddTeacherForm() {
+    $('#formHeadTitle').text('Add New Teacher');
+    $('#teacherFormContent')[0].reset();
+    $('#teacherForm').show();
+  }
+
+  function showEditTeacherForm(teacherId) {
+    $.ajax({
+      url: '/Info/Adm/teacherDetails/' + teacherId,
+      method: 'GET',
+      success: function(teacher) {
+        $('#formHeadTitle').text('Edit Teacher');
+        $('#formTeacherId').val(teacher.teacherId).prop('readonly', true);
+        $('#formTeacherName').val(teacher.teacherName);
+        $('#formAcademy').val(teacher.tacademy);
+        $('#formTitle').val(teacher.title);
+        $('#formEmail').val(teacher.temail);
+        $('#formIntroduction').val(teacher.introduction);
+        $('#formFigureUrl').val(teacher.figureUrl);
+        $('#teacherForm').show();
+      },
+      error: function(error) {
+        alert('Failed to load teacher details.');
+      }
+    });
+  }
+
+  function saveTeacher() {
+    let teacherId = $('#formTeacherId').val();
+    let teacherName = $('#formTeacherName').val();
+    let academy = $('#formAcademy').val();
+    let title = $('#formTitle').val();
+    let email = $('#formEmail').val();
+    let introduction = $('#formIntroduction').val();
+    let figureUrl = $('#formFigureUrl').val();
+
+    let url = $('#formHeadTitle').text() === 'Add New Teacher' ? '/Info/Adm/Addteacher' : '/Info/Adm/EditTeacherDetail';
+    let method = $('#formHeadTitle').text() === 'Add New Teacher' ? 'POST' : 'PUT';
+
+    $.ajax({
+      url: url,
+      method: method,
+      contentType: 'application/json',
+      data: JSON.stringify({
+        teacherId: teacherId,
+        teacherName: teacherName,
+        tacademy: academy,
+        title: title,
+        temail: email,
+        introduction: introduction,
+        figureUrl: figureUrl
+      }),
+      success: function(response) {
+        alert(response);
+        $('#teacherForm').hide();
+        loadAllTeachers();
+      },
+      error: function(error) {
+        alert('Failed to save teacher information.');
+      }
+    });
+  }
+
+  function deleteTeacher(teacherId) {
+    if (confirm('Are you sure you want to delete this teacher?')) {
+      $.ajax({
+        url: '/Info/Adm/Delteacher/' + teacherId,
+        method: 'DELETE',
+        success: function(response) {
+          alert(response);
+          loadAllTeachers();
+        },
+        error: function(error) {
+          alert('Failed to delete teacher.');
+        }
+      });
+    }
+  }
+
+  function hideForm() {
+    $('#teacherForm').hide();
+  }
+
+  function showTeacherDetails(teacherId) {
+    $.ajax({
+      url: '/Info/Adm/teacherDetails/' + teacherId,
+      method: 'GET',
+      success: function(teacher) {
+        alert(`Name: ${teacher.teacherName}\nTitle: ${teacher.title}\nAcademy: ${teacher.tacademy}\nEmail: ${teacher.temail}\nIntroduction: ${teacher.introduction}\nFigure URL: ${teacher.figureUrl}`);
+      },
+      error: function(error) {
+        alert('Failed to load teacher details.');
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

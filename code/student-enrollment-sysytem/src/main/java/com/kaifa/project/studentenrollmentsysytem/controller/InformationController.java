@@ -1,19 +1,32 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
-
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+
+
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 
 @RestController
 @RequestMapping("information")
@@ -159,4 +172,56 @@ public class InformationController {
             return Result.error("更新失败", null);
         }
     }
+    @PostMapping("upload")
+    public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile file){
+        String username = (String) session.getAttribute("username");
+        Map<String, Object> response= new HashMap<>();;
+        if (file.isEmpty()) {
+            response.put("status", "file_null");
+            return response;
+        }
+        String UPLOAD_DIR="E:/Temp/picture";
+        String url=UPLOAD_DIR+file.getName();
+        try {
+            // 获取文件名
+            String fileName = file.getOriginalFilename();
+            // 创建目标文件
+            File dest = new File(UPLOAD_DIR, fileName);
+            // 保存文件到目标位置
+            file.transferTo(dest);
+            Student student = studentService.getStudentById(username);
+            student.setFigureUrl(url);
+            response.put("status", "success");
+            return response;
+        } catch (IOException e) {
+            e.printStackTrace();
+            response.put("status", "fail:"+e.getMessage());
+            return response;
+        }
+    }
+
+    @GetMapping("download")
+    public ResponseEntity<Resource> downloadFile() {
+        System.out.println("begin");
+        String UPLOAD_DIR="E:/Temp/picture/a.png";
+        try {
+            // 构建文件路径
+            Path filePath = Paths.get(UPLOAD_DIR).normalize();
+            File file = filePath.toFile();
+            String filename=file.getName();
+            if (!file.exists()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+            // 读取文件内容
+            ByteArrayResource resource = new ByteArrayResource(Files.readAllBytes(filePath));
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(Files.probeContentType(filePath)))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
 }

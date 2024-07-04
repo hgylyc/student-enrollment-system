@@ -15,6 +15,7 @@ public class Mapping {
 
     // 反向映射表
     private static final Map<Character, String> reverseCollegeMap = new HashMap<>();
+    private static final Map<Character, String> reversesemesterMap = new HashMap<>();
     // 静态代码块初始化映射表
     static {
         // 学院到字母的映射
@@ -51,6 +52,7 @@ public class Mapping {
         semesterMap.put("大四秋季学期", 'H');
         // 初始化反向映射表
         initializeReverseMap(collegeMap, reverseCollegeMap);
+        initializeReverseMap(semesterMap, reversesemesterMap);
     }
     private static <K, V> void initializeReverseMap(Map<K, V> sourceMap, Map<V, K> reverseMap) {
         for (Map.Entry<K, V> entry : sourceMap.entrySet()) {
@@ -75,5 +77,8 @@ public class Mapping {
     // 定义静态方法进行反向学院映射
     public static String reverseMapCollege(char code) {
         return reverseCollegeMap.getOrDefault(code, "未知学院");
+    }
+    public static String reverseMapsesemester(char code) {
+        return reversesemesterMap.getOrDefault(code, "未知学期");
     }
 }
