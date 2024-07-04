@@ -35,8 +35,11 @@ public class InformationController {
     private StudentService studentService;
     @Autowired
     private DormitoryService dormitoryService;
+
     @Autowired
     private TeacherService teacherService;
+
+    //学生的宿舍信息显示页面，负责显示可供学生选择的宿舍信息
     @PostMapping ("dormitories")
     public Result dormitoriesList (HttpSession session, Model model){
         String studentId = (String) session.getAttribute("username");
@@ -56,6 +59,7 @@ public class InformationController {
             model.addAttribute("dormitoryList",studentService.getDormByAcGender(academy, gender));
             return Result.success("成功",studentService.getDormByAcGender(academy, gender));
     }
+    //学生申请宿舍
     @PostMapping("apply/{areano}/{dormno}/{roomno}")
     public Result applyForDormitory(@PathVariable String areano, @PathVariable String dormno, @PathVariable String roomno, HttpSession session) {
         String studentId = (String) session.getAttribute("username");
@@ -72,7 +76,7 @@ public class InformationController {
         }
         return Result.success("宿舍申请成功", dormitory);
     }
-
+//学生的信息录入页面，负责录入除照片之外的信息
     @PostMapping("/updateStudent")
     public Result updateStudent(
             @RequestParam(value = "studentId", required = false) String studentId,
@@ -101,7 +105,7 @@ public class InformationController {
                 homeAddress == null || email == null) {
             return Result.error("缺少必填参数，请检查输入", null);
         }
-        Student student = new Student();
+        Student student = new Student();//可以改成更新学生
         student.setStudentId(studentId);
         student.setStudentName(studentName);
         student.setGender(gender);
@@ -127,7 +131,51 @@ public class InformationController {
             return Result.error("更新失败", null);
         }
     }
+    //学生申请校园卡
+    @PostMapping("/applyCampusCard")
+    public Result applyCampusCard(
+            @RequestParam(value = "studentName", required = false) String studentName,
+            @RequestParam(value = "studentId", required = false) String studentId,
+            @RequestParam(value = "idNumber", required = false) String idNumber,
+            @RequestParam(value = "schoolCardPassword", required = false) String schoolCardPassword,
+            @RequestParam(value = "confirmSchoolCardPassword", required = false) String confirmSchoolCardPassword,
+            //@RequestParam(value = "captcha", required = false) String captcha,
+            HttpSession session
+    ) {
+        // 检查所有必要的信息是否已经提供
+        if (studentName == null || studentId == null || idNumber == null || schoolCardPassword == null || confirmSchoolCardPassword == null ) {
+            return Result.error("请完成所有信息", null);
+        }
 
+        // 从session中获取验证码
+        //String sessionCaptcha = (String) session.getAttribute("captcha");
+
+        // 检查验证码
+        //if (sessionCaptcha == null || !sessionCaptcha.equals(captcha)) {
+          //  return Result.error("验证码错误，请重新输入", null);
+       // }
+
+        // 检查两次输入的校园卡密码是否一致
+        if (!schoolCardPassword.equals(confirmSchoolCardPassword)) {
+            return Result.error("两次输入的校园卡密码不一致，请重新设置密码", null);
+        }
+
+        // 获取学生信息并更新
+        Student student = studentService.getStudentById(studentId);
+        if (student == null) {
+            return Result.error("学生不存在", null);
+        }
+        student.setStudentName(studentName);
+        student.setIdNumber(idNumber);
+        student.setSchoolCardPassword(schoolCardPassword); // 更新校园卡密码
+        student.setSchoolCardBalance(0);
+        boolean updateResult = studentService.updateStudentInfo(student);
+        if (updateResult) {
+            return Result.success("校园卡申请成功", student);
+        } else {
+            return Result.error("更新失败", null);
+        }
+    }
     @PostMapping("upload")
     public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile file){
         String username = (String) session.getAttribute("username");
