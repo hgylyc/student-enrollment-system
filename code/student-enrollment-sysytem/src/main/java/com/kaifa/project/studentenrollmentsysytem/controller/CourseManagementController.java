@@ -84,6 +84,4 @@ public class CourseManagementController {
         List<Course> list =courseService.findCourses(courseDTO);
         return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
-
-
 }

@@ -6,13 +6,10 @@ import java.util.Map;
 public class Mapping {
     // 定义一个静态映射表用于学院到字母的映射
     private static final Map<String, Character> collegeMap = new HashMap<>();
-
     // 定义一个静态映射表用于课程类型到数字的映射
     private static final Map<String, Character> courseTypeMap = new HashMap<>();
-
     // 定义一个静态映射表用于学期到字母的映射
     private static final Map<String, Character> semesterMap = new HashMap<>();
-
     // 反向映射表
     private static final Map<Character, String> reverseCollegeMap = new HashMap<>();
     private static final Map<Character, String> reversesemesterMap = new HashMap<>();
