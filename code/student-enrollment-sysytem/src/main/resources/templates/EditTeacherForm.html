@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Teacher</title>
+</head>
+<body>
+
+<h2>Edit Teacher</h2>
+
+<form th:action="@{/Info/Adm/EditTeacherDetail}" method="post">
+  <input type="hidden" th:value="${teacher.teacherId}" name="teacherId">
+  <label for="teacherName">Teacher Name:</label>
+  <input type="text" id="teacherName" name="teacherName" th:value="${teacher.teacherName}"><br>
+  <label for="tacademy">Academy:</label>
+  <input type="text" id="tacademy" name="tacademy" th:value="${teacher.tacademy}"><br>
+  <label for="title">Title:</label>
+  <input type="text" id="title" name="title" th:value="${teacher.title}"><br>
+  <label for="temail">Email:</label>
+  <input type="text" id="temail" name="temail" th:value="${teacher.temail}"><br>
+  <label for="introduction">Introduction:</label>
+  <textarea id="introduction" name="introduction" th:text="${teacher.introduction}"></textarea><br>
+  <label for="figureUrl">Figure URL:</label>
+  <input type="text" id="figureUrl" name="figureUrl" th:value="${teacher.figureUrl}"><br>
+  <button type="submit">Save</button>
+</form>
+
+</body>
+</html>

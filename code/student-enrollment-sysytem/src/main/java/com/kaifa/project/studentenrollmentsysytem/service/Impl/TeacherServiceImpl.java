@@ -6,12 +6,15 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.mapper.TeacherMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDTO;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> implements TeacherService {
+    @Autowired
+    public TeacherMapper teacherMapper;
 
     @Override
     public Teacher getTeacherByName(String teacherName) {
@@ -32,10 +35,21 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public boolean updateTeacher(Teacher teacher) {
         return baseMapper.updateById(teacher) > 0;
     }
-
     @Override
     public boolean deleteTeacherById(String teacherId) {
-        return this.removeById(teacherId);
+        try {
+            int result = teacherMapper.deleteById(teacherId);
+            if (result > 0) {
+                System.out.println("Teacher with ID " + teacherId + " deleted successfully.");
+            } else {
+                System.out.println("Failed to delete teacher with ID " + teacherId);
+            }
+            return result > 0;
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Exception occurred while deleting teacher: " + e.getMessage());
+            return false;
+        }
     }
 
     @Override

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Teacher Information Management</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<h2>Teacher Information Management</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Teacher ID</th>
+        <th>Teacher Name</th>
+        <th>Academy</th>
+        <th>Title</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="teacher : ${teachers}">
+        <td th:text="${teacher.teacherId}">Teacher ID</td>
+        <td th:text="${teacher.teacherName}">Teacher Name</td>
+        <td th:text="${teacher.tacademy}">Academy</td>
+        <td th:text="${teacher.title}">Title</td>
+        <td>
+            <a th:href="@{'/Info/Adm/teacherDetails/' + ${teacher.teacherId}}">Details</a>
+            <a th:href="@{'/Info/Adm/EditTeacherForm/' + ${teacher.teacherId}}">Edit</a>
+            <a href="#" onclick="deleteTeacher('${teacher.teacherId}')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script>
+    function deleteTeacher(teacherId) {
+        if (confirm('Are you sure you want to delete this teacher?')) {
+            $.ajax({
+                url: '/Info/Delteacher/' + teacherId,
+                type: 'DELETE',
+                success: function(response) {
+                    alert('Teacher deleted successfully.');
+                    location.reload(); // Reload the page to reflect changes
+                },
+                error: function(error) {
+                    alert('Failed to delete teacher.');
+                    console.error('Error details:', error);
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

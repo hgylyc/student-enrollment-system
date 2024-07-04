@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Details</title>
+</head>
+<body>
+<h2>Teacher Details</h2>
+<div>
+  <p>Teacher ID: <span th:text="${teacher.teacherId}"></span></p>
+  <p>Teacher Name: <span th:text="${teacher.teacherName}"></span></p>
+  <p>Introduction: <span th:text="${teacher.introduction}"></span></p>
+  <p>Figure URL: <span th:text="${teacher.figureUrl}"></span></p>
+  <!-- Add more details here as needed -->
+</div>
+<a href="/Info/Adm/Ateacher">Back to Teacher List</a>
+</body>
+</html>
