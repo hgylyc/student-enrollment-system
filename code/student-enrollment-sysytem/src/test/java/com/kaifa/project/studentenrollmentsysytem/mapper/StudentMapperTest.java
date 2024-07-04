@@ -20,15 +20,16 @@ public class StudentMapperTest {
     @Test
     public void testInsertStudent() {
         Student student = new Student();
-        student.setStudentName("小红");
-        student.setGender("Female");
-        student.setNativeSpace("山东聊城");
-        student.setStudentId("20221443");
+        student.setStudentName("xjh");
+        student.setGender("男");
+        student.setNativeSpace("安徽合肥");
+        student.setStudentId("20221410");
         student.setClassNo("CS101");
+        student.setAcademy("C");
         student.setMajor("Computer Science");
-        student.setAreaNo("A1");
-        student.setDormNo("D2");
-        student.setRoomNo("101");
+        student.setAreaNo("");
+        student.setDormNo("");
+        student.setRoomNo("");
         student.setBedNo("1");
         student.setState1(true);
         student.setState2(false);
