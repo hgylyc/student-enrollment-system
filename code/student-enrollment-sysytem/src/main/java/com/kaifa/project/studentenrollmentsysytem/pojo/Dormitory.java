@@ -21,5 +21,10 @@ public class Dormitory {
     private String gender;
     @TableField("academy")
     private String academy;
-
+    @TableField("isFull")
+    private Integer isFull;
+    // 自动计算isFull属性
+    public void setIsFull() {
+        this.isFull = (this.currentnumofstu < this.maxnumofstu) ? 0 : 1;
+    }
 }

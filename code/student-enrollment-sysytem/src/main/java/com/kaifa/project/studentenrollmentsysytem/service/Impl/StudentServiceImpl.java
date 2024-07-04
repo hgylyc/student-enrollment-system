@@ -21,9 +21,6 @@ import java.util.Map;
 public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> implements StudentService {
     @Autowired
     private DormitoryMapper dormitoryMapper;
-    public Student login(String studentName,String password){
-        return getOne(new QueryWrapper<Student>().eq("stduent_name",studentName).eq("password",password));
-    }
     @Override
     public Student getStudentById(String studentId) {
         return getById(studentId);
@@ -34,6 +31,15 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         queryWrapper.eq(Dormitory::getAcademy, academy)
                 .eq(Dormitory::getGender, gender);
         return dormitoryMapper.selectList(queryWrapper);
+    }
+    @Override
+    public void updateStudent(Student student) {
+        studentMapper.updateById(student);
+    }
+    @Override
+    public boolean updateStudentInfo(Student student) {
+        // 更新学生信息到数据库
+        return this.updateById(student);
     }
     private StudentMapper studentMapper;
     public List<Map<String, Object>> getNativeSpace(){
