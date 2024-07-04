@@ -8,6 +8,7 @@ import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,12 +16,23 @@ import java.util.stream.Collectors;
 @RequestMapping("/AdmInfo")
 public class TeacherInfoManagementController {
     @Autowired
-    private TeacherService teacherService;
-    //初始化管理端教师信息
+    private HttpSession session;
     @GetMapping
-    public List<Teacher> getAllTeachersForAdm() {
+    public Object getAllTeachersForAdm() {
+        // 判断角色是否为老师
+        Object role = session.getAttribute("role");
+        if (role == null || !role.equals("teacher")) {
+            return "Unauthorized"; // 或者根据需求返回其他信息或处理方式
+        }
         return teacherService.getAllTeachers();
     }
+    @Autowired
+    private TeacherService teacherService;
+    //初始化管理端教师信息
+    /*@GetMapping
+    public List<Teacher> getAllTeachersForAdm() {
+        return teacherService.getAllTeachers();
+    }*/
     //管理端查询教师信息
     @GetMapping("/Asearch")
     public Teacher getTeacherByNameForAdm(@RequestParam String teacherName) {
