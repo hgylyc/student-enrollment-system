@@ -3,6 +3,7 @@ package com.kaifa.project.studentenrollmentsysytem.controller;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseCreate;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
@@ -10,12 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/coursemanage")
-public class courseManagementController {
+public class CourseManagementController {
     @Autowired
     private CourseService courseService;
     @Autowired
@@ -25,6 +28,24 @@ public class courseManagementController {
     public List<CourseDTO> initialClasses(){
         List<Course> list =courseService.list();
         return list.stream().map(CourseDTO::new).collect(Collectors.toList());
+    }
+
+    @PostMapping("coursedetail")  //查询课程
+    public Map<String, Object> courseDetail(@RequestParam("courseId") String courseId){
+        Course course = courseService.getById(courseId);
+        System.out.println(courseId);
+        Map<String, Object> response = new HashMap<>();
+        response.put("courseName", course.getCourseName());
+        response.put("courseId", course.getCourseId());
+        response.put("score", course.getScore());
+        char ch = course.getCourseId().charAt(6);
+        String str = Mapping.reverseMapsesemester(ch);
+        response.put("semester", str);
+        ch=course.getCourseId().charAt(0);
+        str=Mapping.reverseMapCollege(ch);
+        response.put("institution", str);
+        response.put("introduction", course.getIntroduction());
+        return response;
     }
 
     @PostMapping("coursecreate")    //创建课程
@@ -63,4 +84,6 @@ public class courseManagementController {
         List<Course> list =courseService.findCourses(courseDTO);
         return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
+
+
 }
