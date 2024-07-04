@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.mapper.TeacherMapper;
+import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDTO;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.stereotype.Service;
 
@@ -35,5 +36,10 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     @Override
     public boolean deleteTeacherById(String teacherId) {
         return this.removeById(teacherId);
+    }
+
+    @Override
+    public List<Teacher> findTeachers(TeacherDTO filter) {
+        return baseMapper.selectTeachers(filter);
     }
 }
