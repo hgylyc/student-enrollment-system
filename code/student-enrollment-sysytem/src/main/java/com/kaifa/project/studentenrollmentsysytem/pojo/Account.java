@@ -3,6 +3,7 @@ package com.kaifa.project.studentenrollmentsysytem.pojo;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.jsonwebtoken.Jwts;
 import lombok.Data;
 
 @Data

@@ -236,5 +236,4 @@ public class InformationController {
         headers.setContentLength(imageBytes.length);
         return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
-
 }
