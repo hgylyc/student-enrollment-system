@@ -38,9 +38,9 @@ public class TeacherInfoManagementController {
     public Teacher getTeacherByNameForAdm(@RequestParam String teacherName) {
         return teacherService.getTeacherByName(teacherName);
     }
-    // 详细信息
+    // 获取教师详细信息，包括照片
     @GetMapping("/teacherDetails/{teacherId}")
-    public TeacherDetailsDTO getTeacherDetails(@PathVariable String teacherId) {
+    public TeacherDetailsDTO getTeacherDetails(@PathVariable String teacherId, HttpSession session) {
         Teacher teacher = teacherService.getById(teacherId);
         TeacherDetailsDTO teacherDetailsDTO = new TeacherDetailsDTO();
         teacherDetailsDTO.setTitle(teacher.getTitle());
@@ -48,6 +48,7 @@ public class TeacherInfoManagementController {
         teacherDetailsDTO.setTemail(teacher.getTemail());
         teacherDetailsDTO.setTacademy(teacher.getTacademy());
         teacherDetailsDTO.setIntroduction(teacher.getIntroduction());
+        teacherDetailsDTO.setFigureUrl(teacher.getFigureUrl()); // 设置教师照片URL
         return teacherDetailsDTO;
     }
 

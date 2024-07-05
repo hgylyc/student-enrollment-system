@@ -82,6 +82,12 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
 
 
     @Override
+    public Course getCourseById(String courseId) {
+        return courseMapper.selectById(courseId);
+    }
+
+    
+    @Override
     public void decreaseNumOfStu(String courseId) {
         if(courseId == null){
             throw new IllegalArgumentException("CourseId cannot be null");
@@ -133,7 +139,6 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         }
         return null;
     }
-
 
     public boolean updateCourse(Course course) {
         Course existingCourse = courseMapper.selectById(course.getCourseId());

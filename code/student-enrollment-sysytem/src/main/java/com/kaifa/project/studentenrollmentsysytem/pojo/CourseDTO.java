@@ -11,7 +11,7 @@ public class CourseDTO {
 
     private String courseType; // 课程类型
     private String institution; // 开课部门
-    
+
     private String status; // 选课状态
     private String teacherName; // 教师姓名
     private Integer time; // 总课时

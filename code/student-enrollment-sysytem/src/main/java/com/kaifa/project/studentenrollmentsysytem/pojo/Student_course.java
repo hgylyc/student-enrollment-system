@@ -13,8 +13,6 @@ public class Student_course {
     @TableField("student_id")
     private String studentId;
 
-    @TableField("courseTime")
-    private String courseTime;
 
     public void setCourseId(String courseId) {
         this.courseId = courseId;

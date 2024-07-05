@@ -6,6 +6,7 @@ public class TeacherDetailsDTO {
     private String tacademy;
     private String introduction;
     private String title;
+    private String figureUrl;
 
     // Getters and Setters
     public String getTeacherName() {
@@ -48,11 +49,20 @@ public class TeacherDetailsDTO {
         this.title = title;
     }
 
+    public String getFigureUrl() {
+        return figureUrl;
+    }
+
+    public void setFigureUrl(String figureUrl) {
+        this.figureUrl = figureUrl;
+    }
+
     public TeacherDetailsDTO(){}
     public TeacherDetailsDTO(Teacher teacher){
         this.teacherName = teacher.getTeacherName();
         this.tacademy = teacher.getTacademy();
         this.temail = teacher.getTemail();
         this.introduction = teacher.getIntroduction();
+        this.figureUrl = teacher.getFigureUrl();
     }
 }

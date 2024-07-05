@@ -19,4 +19,6 @@ public interface CourseService extends IService <Course>{
     List<Course> findCourses(CourseDTO filter);
 
     CourseDTO getCourseDetails(String courseId);
+
+    Course getCourseById(String courseId);
 }

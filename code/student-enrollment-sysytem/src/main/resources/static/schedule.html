@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>课程表</title>
+  <style>
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      table-layout: fixed; /* 固定表格布局 */
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 15px; /* 增加填充以提高可读性 */
+      width: 100px; /* 固定每个单元格的宽度 */
+      height: 50px; /* 固定每个单元格的高度 */
+      overflow: hidden; /* 如果内容超出单元格大小，则隐藏溢出内容 */
+      white-space: pre-wrap; /* 根据需要保留空格并换行显示 */
+      text-overflow: ellipsis; /* 如果内容过长，显示省略号 */
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+
+<h2>学生课程表</h2>
+
+<table>
+  <tr>
+    <th></th>
+    <th>星期一</th>
+    <th>星期二</th>
+    <th>星期三</th>
+    <th>星期四</th>
+    <th>星期五</th>
+    <th>星期六</th>
+    <th>星期日</th>
+  </tr>
+  <tr>
+    <th>第一节</th>
+    <td id="1-1"></td>
+    <td id="2-1"></td>
+    <td id="3-1"></td>
+    <td id="4-1"></td>
+    <td id="5-1"></td>
+    <td id="6-1"></td>
+    <td id="7-1"></td>
+  </tr>
+  <tr>
+    <th>第二节</th>
+    <td id="1-2"></td>
+    <td id="2-2"></td>
+    <td id="3-2"></td>
+    <td id="4-2"></td>
+    <td id="5-2"></td>
+    <td id="6-2"></td>
+    <td id="7-2"></td>
+  </tr>
+  <tr>
+    <th>第三节</th>
+    <td id="1-3"></td>
+    <td id="2-3"></td>
+    <td id="3-3"></td>
+    <td id="4-3"></td>
+    <td id="5-3"></td>
+    <td id="6-3"></td>
+    <td id="7-3"></td>
+  </tr>
+  <tr>
+    <th>第四节</th>
+    <td id="1-4"></td>
+    <td id="2-4"></td>
+    <td id="3-4"></td>
+    <td id="4-4"></td>
+    <td id="5-4"></td>
+    <td id="6-4"></td>
+    <td id="7-4"></td>
+  </tr>
+  <tr>
+    <th>第五节</th>
+    <td id="1-5"></td>
+    <td id="2-5"></td>
+    <td id="3-5"></td>
+    <td id="4-5"></td>
+    <td id="5-5"></td>
+    <td id="6-5"></td>
+    <td id="7-5"></td>
+  </tr>
+</table>
+
+<script>
+  // 从后端获取课程表数据
+  fetch('/schedule')
+          .then(response => response.json())
+          .then(data => {
+            // 将数据填充到表格中
+            for (var i = 0; i < 5; i++) {
+              for (var j = 0; j < 7; j++) {
+                var cellId = (i + 1) + "-" + (j + 1);
+                var cell = document.getElementById(cellId);
+                if (cell) {
+                  // 注意调整填充数据的位置
+                  cell.innerHTML = data[j][i] ? data[j][i] : "";
+                }
+              }
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching schedule data:', error);
+          });
+
+</script>
+
+</body>
+</html>
