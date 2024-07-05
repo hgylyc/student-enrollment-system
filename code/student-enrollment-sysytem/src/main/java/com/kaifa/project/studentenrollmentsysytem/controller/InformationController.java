@@ -255,25 +255,4 @@ public class InformationController {
         return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
 
-    //缴费
-    @PostMapping("payfee")
-    public Result Paymoney(HttpSession session){
-        String studentId = (String) session.getAttribute("username");
-        // 如果studentId为空，返回空列表或者抛出异常
-        if (studentId == null) {
-            // 返回空列表或者抛出异常，根据需求选择
-            return Result.error("用户id不存在，请重新登录",null);
-        }
-        Student student = studentService.getStudentById(studentId);
-        student.setState2(true);
-        boolean updateResult = studentService.updateStudentInfo(student);
-        if (updateResult) {
-            return Result.success("恭喜完成登录", student);
-        } else {
-            return Result.error("登录失败", null);
-        }
-
-    }
-
-
 }
