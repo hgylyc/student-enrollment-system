@@ -1,9 +1,7 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
+import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -41,24 +40,20 @@ public class InformationController {
     private TeacherService teacherService;
 
     //学生的宿舍信息显示页面，负责显示可供学生选择的宿舍信息
-    @PostMapping ("dormitories")
-    public Result dormitoriesList (HttpSession session, Model model){
+    @PostMapping("dormitories")
+    public Result dormitoriesList(HttpSession session, Model model) {
         String studentId = (String) session.getAttribute("username");
-        // 如果studentId为空，返回空列表或者抛出异常
+        // 如果 studentId 为空，返回空列表或者抛出异常
         if (studentId == null) {
-            // 返回空列表或者抛出异常，根据需求选择
-            return Result.error("用户id不存在，请重新登录",null);
+            return Result.error("用户id不存在，请重新登录", null);
         }
         Student student = studentService.getStudentById(studentId);
-//        if ((student.getAreaNo()).equals("")) {
-//            // 返回空列表或者抛出异常，根据需求选择
-//            return Result.error("用户宿舍已存在",student.getAreaNo());
-//        }
         // 获取该专业和性别对应的所有宿舍
-            String academy = student.getAcademy();
-            String gender = student.getGender();
-            model.addAttribute("dormitoryList",studentService.getDormByAcGender(academy, gender));
-            return Result.success("成功",studentService.getDormByAcGender(academy, gender));
+        String academy = student.getAcademy();
+        String gender = student.getGender();
+        List<DormitoryDTO> dormitoryDTOList = studentService.getDormByAcGender(academy, gender);
+        model.addAttribute("dormitoryList", dormitoryDTOList);
+        return Result.success("成功", dormitoryDTOList);
     }
     //学生申请宿舍
     @PostMapping("apply/{areano}/{dormno}/{roomno}")

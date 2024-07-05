@@ -6,10 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.mapper.CourseMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.DormitoryMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.StudentMapper;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
-import com.kaifa.project.studentenrollmentsysytem.pojo.StudentDTO;
-import com.kaifa.project.studentenrollmentsysytem.pojo.studentManageDTO;
+import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +31,30 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     public Student getStudentById(String studentId) {
         return getById(studentId);
     }
+    public DormitoryDTO convertToDTO(Dormitory dormitory) {
+        DormitoryDTO dto = new DormitoryDTO();
+        dto.setAreano(dormitory.getAreano());
+        dto.setDormno(dormitory.getDormno());
+        dto.setRoomno(dormitory.getRoomno());
+        dto.setMaxnumofstu(dormitory.getMaxnumofstu());
+        dto.setCurrentnumofstu(dormitory.getCurrentnumofstu());
+        dto.setGender(dormitory.getGender());
+        dto.setAcademy(Mapping.reverseMapCollege(dormitory.getAcademy().charAt(0)));
+        dto.setIsFull(dormitory.getIsFull());
+        return dto;
+    }
     @Override
-    public List<Dormitory> getDormByAcGender(String academy, String gender) {
+    public List<DormitoryDTO> getDormByAcGender(String academy, String gender) {
         LambdaQueryWrapper<Dormitory> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Dormitory::getAcademy, academy)
                 .eq(Dormitory::getGender, gender);
-        return dormitoryMapper.selectList(queryWrapper);
+        List<Dormitory> dormitories = dormitoryMapper.selectList(queryWrapper);
+
+        // 将 Dormitory 列表转换为 DormitoryDTO 列表
+        List<DormitoryDTO> dormitoryDTOs = dormitories.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return dormitoryDTOs;
     }
     @Override
     public void updateStudent(Student student) {

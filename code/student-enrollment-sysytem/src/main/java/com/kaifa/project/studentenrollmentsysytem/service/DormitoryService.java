@@ -12,4 +12,5 @@ public interface DormitoryService extends IService<Dormitory> {
     Integer getLeftNumOfbed();
     List<Map<String, Object>> getStudentCountByArea();
     Dormitory applyForDormitory(String studentId, String areano, String dormno, String roomno);//申请宿舍
+
 }
