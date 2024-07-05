@@ -22,5 +22,35 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
         List<Map<String, Object>> getStudentCountByArea();
         @Update("UPDATE dormitory SET max_num_of_stu = #{dormitory.maxnumofstu}, current_num_of_stu = #{dormitory.currentnumofstu}, gender = #{dormitory.gender}, academy = #{dormitory.academy}, isFull = #{dormitory.isFull} WHERE area_no = #{dormitory.areano} AND dorm_no = #{dormitory.dormno} AND room_no = #{dormitory.roomno}")
         int updateDormitory(@Param("dormitory") Dormitory dormitory);
+        @Select("<script>" +
+                "SELECT area_no AS areano, dorm_no AS dormno, room_no AS roomno, max_num_of_stu AS maxnumofstu, " +
+                "current_num_of_stu AS currentnumofstu, gender, academy, isFull " +
+                "FROM dormitory " +
+                "WHERE 1=1 " +
+                "<if test='areaNo != null and areaNo != \"\"'> " +
+                "AND area_no = #{areaNo} " +
+                "</if> " +
+                "<if test='dormNo != null and dormNo != \"\"'> " +
+                "AND dorm_no = #{dormNo} " +
+                "</if> " +
+                "<if test='roomNo != null and roomNo != \"\"'> " +
+                "AND room_no = #{roomNo} " +
+                "</if> " +
+                "<if test='isFull != null'> " +
+                "AND isFull = #{isFull} " +
+                "</if> " +
+                "<if test='academy != null and academy != \"\"'> " +
+                "AND academy = #{academy} " +
+                "</if> " +
+                "<if test='gender != null and gender != \"\"'> " +
+                "AND gender = #{gender} " +
+                "</if> " +
+                "</script>")
+        List<Dormitory> selectDormitories(@Param("areaNo") String areaNo,
+                                          @Param("dormNo") String dormNo,
+                                          @Param("roomNo") String roomNo,
+                                          @Param("isFull") Integer isFull,
+                                          @Param("academy") String academy,
+                                          @Param("gender") String gender);
 
 }
