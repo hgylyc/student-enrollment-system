@@ -63,18 +63,24 @@ public class LoginController {
 
     @PostMapping("activate")
     public Map<String, Object> activate(@RequestParam("studentId") String studentId,
-                                      @RequestParam("username") String username,
-                                      @RequestParam("idNumber") String idNumber,
-                                      @RequestParam("password") String password,
-                                      @RequestParam("email") String email){
+                                        @RequestParam("username") String username,
+                                        @RequestParam("idNumber") String idNumber,
+                                        @RequestParam("password") String password,
+                                        @RequestParam("email") String email,
+                                        @RequestParam("code") String code  ){
         Student student =studentService.getById(studentId);
         Map<String, Object> response =new HashMap<>();
+        if(verificationService.verifyCode(email,code))
+        {
+            response.put("status","code wrong");
+            return response;
+        }
         if(student==null)
         {
             response.put("status","id null");
             return response;
         }
-        else if(student.getIdNumber().equals(idNumber))
+        if(student.getIdNumber().equals(idNumber))
         {
             Account account=new Account(studentId,username,password,"student",email);
             accountService.save(account);
@@ -107,7 +113,6 @@ public class LoginController {
         response.put("status","success");
         return response;
     }
-
     @PostMapping("/verify")
     public Map<String, Object> verify(@RequestParam String email,@RequestParam String code) {
         Map<String, Object> response =new HashMap<>();
@@ -120,4 +125,25 @@ public class LoginController {
         }
         return response;
     }
+
+    @PostMapping("findpasswordback")
+    public Map<String, Object> findPasswordBack(@RequestParam String username,
+                                                @RequestParam String email,
+                                                @RequestParam String password,
+                                                @RequestParam String code) {
+        Map<String, Object> response =new HashMap<>();
+        if(verificationService.verifyCode(email,code))
+        {
+            Account account=accountService.getById(username);
+            account.setPassword(password);
+            verificationService.removeVerificationCode(email,code);
+            response.put("status","success");
+        }
+        else {
+            response.put("status", "code wrong");
+        }
+        return response;
+    }
+
+
 }

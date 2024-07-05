@@ -11,4 +11,7 @@ public class VerificationService {
     public boolean verifyCode(String email, String code) {
         return code.equals(verificationCodes.get(email));
     }
+    public void removeVerificationCode(String email, String code){
+        verificationCodes.remove(email, code);
+    }
 }
