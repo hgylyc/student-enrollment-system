@@ -1,12 +1,14 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
+import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDTO;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/StuInfo")
@@ -23,5 +25,11 @@ public class TeacherInfoQueryController {
     @GetMapping("/Ssearch")
     public Teacher getTeacherByNameForStu(@RequestParam String teacherName) {
         return teacherService.getTeacherByName(teacherName);
+    }
+
+    @PostMapping("/filterTeachers")
+    public List<TeacherDTO> findTeachers(@RequestBody TeacherDTO teacherDTO) {
+        List<Teacher> list = teacherService.findTeachers(teacherDTO);
+        return list.stream().map(TeacherDTO::new).collect(Collectors.toList());
     }
 }

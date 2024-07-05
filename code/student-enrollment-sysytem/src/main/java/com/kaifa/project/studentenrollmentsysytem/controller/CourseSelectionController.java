@@ -2,7 +2,6 @@ package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student_course;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import com.kaifa.project.studentenrollmentsysytem.service.Student_courseService;
@@ -16,58 +15,101 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/CourseSel")
 public class CourseSelectionController {
+
     @Autowired
     private CourseService courseService;
+
     @Autowired
     private Student_courseService student_courseService;
 
     // 初始化课程列表
-    @GetMapping("/course")
-    public List<Course> getCourseForStu(HttpSession session) {
+    @GetMapping
+    public List<CourseDTO> getCourseForStu(HttpSession session) {
         String studentId = (String) session.getAttribute("username");
         List<Course> courses = courseService.getCoursesByStudentAcademy(studentId);
-        System.out.println("返回的课程数量: " + courses.size());
-        return courses;
+        return courses.stream().map(course -> {
+            CourseDTO courseDTO = new CourseDTO(course);
+            boolean isFull = courseService.isCourseFull(course.getCourseId());
+            boolean isAlreadySelected = student_courseService.isCourseSelectByStu(studentId, course.getCourseId());
+            if (isFull) {
+                courseDTO.setStatus("已满");
+            } else if (isAlreadySelected) {
+                courseDTO.setStatus("已选");
+            } else {
+                courseDTO.setStatus("");
+            }
+            return courseDTO;
+        }).collect(Collectors.toList());
     }
+
     // 选课确认
     @PostMapping("/selectCourse")
-    public String selectCourse(HttpSession session, @RequestParam("courseId") String courseId) {
-        String s = (String) session.getAttribute("username");
-        //return s;
+    public String selectCourse(HttpSession session, @RequestBody CourseDTO courseDTO) {
+        String studentId = (String) session.getAttribute("username");
+        String courseId = courseDTO.getCourseId(); // 获取 courseId
         boolean isFull = courseService.isCourseFull(courseId);
-        boolean isAlreadySelected = student_courseService.isCourseSelectByStu(s, courseId);
+        boolean isAlreadySelected = student_courseService.isCourseSelectByStu(studentId, courseId);
+
         if (isFull) {
             return "Course is already full";
         } else if (isAlreadySelected) {
             return "You have already selected this course";
         } else {
             Student_course sc = new Student_course();
-            sc.setStudentId(s);
+            sc.setStudentId(studentId);
             sc.setCourseId(courseId);
             student_courseService.save(sc);
             courseService.updateNumOfStu(courseId);
-            System.out.println("StudentID:"+s);
             return "Course selected successfully";
         }
     }
 
+    // 退课操作
+    @PostMapping("/dropCourse")
+    public String dropCourse(HttpSession session, @RequestBody CourseDTO courseDTO) {
+        String studentId = (String) session.getAttribute("username");
+        String courseId = courseDTO.getCourseId();
+        student_courseService.dropCourse(studentId, courseId);
+        courseService.decreaseNumOfStu(courseId);
+        return "Course dropped successfully";
+    }
+
     // 通过课程名称和课程ID检索课程
     @GetMapping("/filter")
-    public List<Course> filterCoursesByCourseNameAndId(
+    public List<CourseDTO> filterCoursesByCourseNameAndId(
             @RequestParam(required = false) String courseName,
-            @RequestParam(required = false) String courseId){
-        return courseService.filterCoursesByCourseNameAndId(courseName, courseId);
+            @RequestParam(required = false) String courseId) {
+        List<Course> courses = courseService.filterCoursesByCourseNameAndId(courseName, courseId);
+        return courses.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
 
     // 课程类型过滤课程列表
     @GetMapping("/filterByType")
-    public List<Course> filterCoursesByType(
-            @RequestParam(required = false) String courseType){
-        return courseService.filterCoursesByType(courseType);
+    public List<CourseDTO> filterCoursesByType(
+            @RequestParam(required = false) String courseType) {
+        List<Course> courses = courseService.filterCoursesByType(courseType);
+        return courses.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
-    @PostMapping("courseselect")   //查询
-    public List<CourseDTO> courseSelect(@RequestBody CourseDTO courseDTO){
-        List<Course> list =courseService.findCourses(courseDTO);
+
+    // 查询课程
+    @PostMapping("/searchCourse")
+    public List<CourseDTO> searchCourse(@RequestBody CourseDTO courseDTO) {
+        List<Course> list = courseService.findCourses(courseDTO);
         return list.stream().map(CourseDTO::new).collect(Collectors.toList());
     }
+
+    // 获取课程详细信息及教师列表
+    @GetMapping("/courseDetails")
+    public CourseDTO getCourseDetails(@RequestParam("courseId") String courseId) {
+        return courseService.getCourseDetails(courseId);
+    }
+
+    // 获取已选课程列表
+    @GetMapping("/selectedCourses")
+    public List<CourseDTO> getSelectedCourses(HttpSession session) {
+        String studentId = (String) session.getAttribute("username");
+        return student_courseService.getSelectedCourses(studentId);
+    }
+
+
 }
