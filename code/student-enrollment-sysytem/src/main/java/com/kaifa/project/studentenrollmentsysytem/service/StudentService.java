@@ -15,7 +15,6 @@ public interface StudentService extends IService<Student> {
     Student getStudentById(String studentId);//通过id查找学生
     void updateStudent(Student student);//更新学生
     boolean updateStudentInfo(Student student);
-
     List<Dormitory> getDormByAcGender(String academy, String gender);
     List<Map<String, Object>> getNativeSpace();
     List<Map<String, Object>> getProcessState();

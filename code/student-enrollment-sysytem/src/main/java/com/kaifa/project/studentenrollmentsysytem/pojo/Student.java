@@ -55,6 +55,8 @@ public class Student {
     private Integer schoolCardBalance;
     @TableField("academy")
     private String academy;
+    @TableField("phone_number")
+    private String phoneNumber;
 
 
 }

@@ -95,17 +95,32 @@ public class InformationController {
             @RequestParam(value = "emergencyContactName", required = false) String emergencyContactName,
             @RequestParam(value = "emergencyContactTel", required = false) String emergencyContactTel,
             @RequestParam(value = "homeAddress", required = false) String homeAddress,
-            @RequestParam(value = "email", required = false) String email
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+            HttpSession session
     ) {
         // Check if any parameter is missing
-        if (studentId == null || studentName == null || gender == null || nativeSpace == null ||
-                classNo == null || major == null || areaNo == null || dormNo == null ||
-                roomNo == null || bedNo == null || idNumber == null || fatherName == null ||
-                motherName == null || emergencyContactName == null || emergencyContactTel == null ||
-                homeAddress == null || email == null) {
-            return Result.error("缺少必填参数，请检查输入", null);
-        }
-        Student student = new Student();//可以改成更新学生
+        if (studentId == null) return Result.error("缺少必填参数: studentId", null);
+        if (studentName == null) return Result.error("缺少必填参数: studentName", null);
+        if (gender == null) return Result.error("缺少必填参数: gender", null);
+        if (nativeSpace == null) return Result.error("缺少必填参数: nativeSpace", null);
+        if (classNo == null) return Result.error("缺少必填参数: classNo", null);
+        if (major == null) return Result.error("缺少必填参数: major", null);
+        if (areaNo == null) return Result.error("缺少必填参数: areaNo", null);
+        if (dormNo == null) return Result.error("缺少必填参数: dormNo", null);
+        if (roomNo == null) return Result.error("缺少必填参数: roomNo", null);
+        if (bedNo == null) return Result.error("缺少必填参数: bedNo", null);
+        if (idNumber == null) return Result.error("缺少必填参数: idNumber", null);
+        if (fatherName == null) return Result.error("缺少必填参数: fatherName", null);
+        if (motherName == null) return Result.error("缺少必填参数: motherName", null);
+        if (emergencyContactName == null) return Result.error("缺少必填参数: emergencyContactName", null);
+        if (emergencyContactTel == null) return Result.error("缺少必填参数: emergencyContactTel", null);
+        if (homeAddress == null) return Result.error("缺少必填参数: homeAddress", null);
+        if (email == null) return Result.error("缺少必填参数: email", null);
+        if (phoneNumber == null) return Result.error("缺少必填参数: phoneNumber", null);
+
+        String studentid = (String) session.getAttribute("username");
+        Student student = studentService.getStudentById(studentid);
         student.setStudentId(studentId);
         student.setStudentName(studentName);
         student.setGender(gender);
@@ -123,6 +138,9 @@ public class InformationController {
         student.setEmergencyContactTel(emergencyContactTel);
         student.setHomeAddress(homeAddress);
         student.setEmail(email);
+        student.setPhoneNumber(phoneNumber);
+        student.setState1(true);
+
 
         boolean updateResult = studentService.updateStudentInfo(student);
         if (updateResult) {
@@ -236,4 +254,5 @@ public class InformationController {
         headers.setContentLength(imageBytes.length);
         return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
+
 }

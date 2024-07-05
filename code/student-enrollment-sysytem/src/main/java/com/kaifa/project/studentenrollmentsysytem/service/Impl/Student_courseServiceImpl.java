@@ -9,6 +9,8 @@ import com.kaifa.project.studentenrollmentsysytem.service.Student_courseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class Student_courseServiceImpl extends ServiceImpl<Student_courseMapper, Student_course>implements Student_courseService {
 
@@ -17,6 +19,11 @@ public class Student_courseServiceImpl extends ServiceImpl<Student_courseMapper,
         return baseMapper.selectOne(new QueryWrapper<Student_course>()
                 .eq("student_id",studentId)
                 .eq("course_id",courseId))!=null;
+    }
+
+    @Override
+    public List<Student_course> getStudentSchedule(String studentId) {
+        return null;
     }
 
 
