@@ -8,19 +8,28 @@ import com.kaifa.project.studentenrollmentsysytem.mapper.DormitoryMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.StudentMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
+import com.kaifa.project.studentenrollmentsysytem.pojo.StudentDTO;
+import com.kaifa.project.studentenrollmentsysytem.pojo.studentManageDTO;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
 public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> implements StudentService {
     @Autowired
     private DormitoryMapper dormitoryMapper;
+    @Autowired
+    private StudentMapper studentMapper;
     @Override
     public Student getStudentById(String studentId) {
         return getById(studentId);
@@ -41,7 +50,42 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         // 更新学生信息到数据库
         return this.updateById(student);
     }
-    private StudentMapper studentMapper;
+
+    public StudentDTO getStudentDTOById(String studentId) throws IOException {
+        Student student = studentMapper.getStudentInfoById(studentId);
+
+        if (student == null) {
+            return null;
+        }
+
+        Path imagePath = Paths.get(student.getFigureUrl());
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+
+        return new StudentDTO(
+                student.getEmail(),
+                student.getPhoneNumber(),
+                student.getStudentId(),
+                student.getAcademy(),
+                imageBytes
+        );
+    }
+
+    @Override
+    public List<studentManageDTO> findStudents(String studentId, String studentName, String academy) {
+        List<Student> students = studentMapper.selectStudents(studentId, studentName, academy);
+        return students.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+
+    private studentManageDTO convertToDTO(Student student) {
+        studentManageDTO dto = new studentManageDTO();
+        dto.setStudentId(student.getStudentId());
+        dto.setStudentName(student.getStudentName());
+        dto.setAcademy(student.getAcademy());
+        dto.setState1(student.isState1());
+        dto.setState2(student.isState2());
+        dto.setState3(student.isState3());
+        return dto;
+    }
     public List<Map<String, Object>> getNativeSpace(){
         return studentMapper.getNativeSpace();
     };

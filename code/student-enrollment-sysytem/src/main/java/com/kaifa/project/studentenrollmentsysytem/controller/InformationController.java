@@ -1,6 +1,7 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
@@ -67,13 +68,14 @@ public class InformationController {
             return Result.error("用户未登录", null);
         }
         Student student = studentService.getStudentById(studentId);
-        if(!(student.getDormNo().equals(""))){
-            return Result.error("学生已有宿舍",studentId);
+        if(!(student.getDormNo() == null || student.getDormNo().isEmpty())){
+            return Result.error("学生已有宿舍",student.getDormNo());
         }
         Dormitory dormitory = dormitoryService.applyForDormitory(studentId, areano, dormno, roomno);
         if (dormitory == null) {
             return Result.error("宿舍申请失败", null);
         }
+        student.setState2(true);
         return Result.success("宿舍申请成功", dormitory);
     }
 //学生的信息录入页面，负责录入除照片之外的信息
@@ -84,11 +86,7 @@ public class InformationController {
             @RequestParam(value = "gender", required = false) String gender,
             @RequestParam(value = "nativeSpace", required = false) String nativeSpace,
             @RequestParam(value = "classNo", required = false) String classNo,
-            @RequestParam(value = "major", required = false) String major,
-            @RequestParam(value = "areaNo", required = false) String areaNo,
-            @RequestParam(value = "dormNo", required = false) String dormNo,
-            @RequestParam(value = "roomNo", required = false) String roomNo,
-            @RequestParam(value = "bedNo", required = false) String bedNo,
+            @RequestParam(value = "academy", required = false) String academy,
             @RequestParam(value = "idNumber", required = false) String idNumber,
             @RequestParam(value = "fatherName", required = false) String fatherName,
             @RequestParam(value = "motherName", required = false) String motherName,
@@ -97,6 +95,7 @@ public class InformationController {
             @RequestParam(value = "homeAddress", required = false) String homeAddress,
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
+            @RequestParam(value = "major", required = false) String major,
             HttpSession session
     ) {
         // Check if any parameter is missing
@@ -106,10 +105,6 @@ public class InformationController {
         if (nativeSpace == null) return Result.error("缺少必填参数: nativeSpace", null);
         if (classNo == null) return Result.error("缺少必填参数: classNo", null);
         if (major == null) return Result.error("缺少必填参数: major", null);
-        if (areaNo == null) return Result.error("缺少必填参数: areaNo", null);
-        if (dormNo == null) return Result.error("缺少必填参数: dormNo", null);
-        if (roomNo == null) return Result.error("缺少必填参数: roomNo", null);
-        if (bedNo == null) return Result.error("缺少必填参数: bedNo", null);
         if (idNumber == null) return Result.error("缺少必填参数: idNumber", null);
         if (fatherName == null) return Result.error("缺少必填参数: fatherName", null);
         if (motherName == null) return Result.error("缺少必填参数: motherName", null);
@@ -118,19 +113,19 @@ public class InformationController {
         if (homeAddress == null) return Result.error("缺少必填参数: homeAddress", null);
         if (email == null) return Result.error("缺少必填参数: email", null);
         if (phoneNumber == null) return Result.error("缺少必填参数: phoneNumber", null);
+        if (academy == null) return Result.error("缺少必填参数: academy", null);
 
+        Mapping mapping=new Mapping();
         String studentid = (String) session.getAttribute("username");
         Student student = studentService.getStudentById(studentid);
+        if(!(studentId.equals(studentid)))
+            return Result.error("学号不匹配", null);
         student.setStudentId(studentId);
         student.setStudentName(studentName);
         student.setGender(gender);
         student.setNativeSpace(nativeSpace);
         student.setClassNo(classNo);
         student.setMajor(major);
-        student.setAreaNo(areaNo);
-        student.setDormNo(dormNo);
-        student.setRoomNo(roomNo);
-        student.setBedNo(bedNo);
         student.setIdNumber(idNumber);
         student.setFatherName(fatherName);
         student.setMotherName(motherName);
@@ -139,6 +134,7 @@ public class InformationController {
         student.setHomeAddress(homeAddress);
         student.setEmail(email);
         student.setPhoneNumber(phoneNumber);
+        student.setAcademy(Character.toString(mapping.mapCollege(academy)));
         student.setState1(true);
 
 
@@ -255,25 +251,7 @@ public class InformationController {
         return ResponseEntity.ok().headers(headers).body(imageBytes);
     }
 
-    //缴费
-    @PostMapping("payfee")
-    public Result Paymoney(HttpSession session){
-        String studentId = (String) session.getAttribute("username");
-        // 如果studentId为空，返回空列表或者抛出异常
-        if (studentId == null) {
-            // 返回空列表或者抛出异常，根据需求选择
-            return Result.error("用户id不存在，请重新登录",null);
-        }
-        Student student = studentService.getStudentById(studentId);
-        student.setState2(true);
-        boolean updateResult = studentService.updateStudentInfo(student);
-        if (updateResult) {
-            return Result.success("恭喜完成登录", student);
-        } else {
-            return Result.error("登录失败", null);
-        }
 
-    }
 
 
 }
