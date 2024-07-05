@@ -10,11 +10,13 @@ public interface CourseService extends IService <Course>{
     List<Course> getCoursesByStudentAcademy(String studentId);
     boolean isCourseFull(String courseId);
     void updateNumOfStu(String courseId);
+    void decreaseNumOfStu(String coureseId);
     List<Course> filterCoursesByCourseNameAndId(String courseName, String courseId);
     List<Course> filterCoursesByType(String courseType);
-    List<Course> findCourses(CourseDTO filter);
 
     public boolean updateCourse(Course course);
 
+    List<Course> findCourses(CourseDTO filter);
 
+    CourseDTO getCourseDetails(String courseId);
 }

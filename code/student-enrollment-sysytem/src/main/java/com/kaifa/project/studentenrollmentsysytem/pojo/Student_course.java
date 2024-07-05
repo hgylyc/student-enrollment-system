@@ -1,6 +1,7 @@
 package com.kaifa.project.studentenrollmentsysytem.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
@@ -11,6 +12,9 @@ public class Student_course {
     private String courseId;
     @TableField("student_id")
     private String studentId;
+
+    @TableField("courseTime")
+    private String courseTime;
 
     public void setCourseId(String courseId) {
         this.courseId = courseId;

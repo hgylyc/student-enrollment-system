@@ -4,18 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.mapper.CourseMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.StudentMapper;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
-import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
+import com.kaifa.project.studentenrollmentsysytem.mapper.TeacherMapper;
+import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implements CourseService{
+    @Autowired
+    private TeacherMapper teacherMapper;
     @Autowired
     private StudentMapper studentMapper;
     @Autowired
@@ -65,8 +67,30 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
 
     @Override
     public void updateNumOfStu(String courseId) {
+        if (courseId == null) {
+            throw new IllegalArgumentException("CourseId cannot be null");
+        }
+
         Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("Course not found for courseId: " + courseId);
+        }
+
         course.setCurrentNumOfStu(course.getCurrentNumOfStu() + 1);
+        baseMapper.updateById(course);
+    }
+
+
+    @Override
+    public void decreaseNumOfStu(String courseId) {
+        if(courseId == null){
+            throw new IllegalArgumentException("CourseId cannot be null");
+        }
+        Course course = baseMapper.selectById(courseId);
+        if (course == null) {
+            throw new IllegalArgumentException("Course not found for courseId: " + courseId);
+        }
+        course.setCurrentNumOfStu(course.getCurrentNumOfStu() - 1);
         baseMapper.updateById(course);
     }
 
@@ -96,6 +120,18 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     @Override
     public List<Course> findCourses(CourseDTO filter) {
         return courseMapper.selectCourses(filter);
+    }
+
+    @Override
+    public CourseDTO getCourseDetails(String courseId) {
+        Course course = baseMapper.selectById(courseId);
+        if (course != null) {
+            // 获取教师信息列表
+            List<Teacher> teachers = teacherMapper.selectList(new QueryWrapper<Teacher>().eq("course_id", courseId));
+            List<TeacherDTO> teacherDTOs = teachers.stream().map(TeacherDTO::new).collect(Collectors.toList());
+            return new CourseDTO(course, teacherDTOs);
+        }
+        return null;
     }
 
 
