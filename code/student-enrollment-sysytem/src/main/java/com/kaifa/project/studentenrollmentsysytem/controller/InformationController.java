@@ -8,10 +8,19 @@ import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -27,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("information")
@@ -39,6 +49,73 @@ public class InformationController {
     @Autowired
     private TeacherService teacherService;
 
+    private static final String CAPTCHA_SESSION_KEY = "random";
+
+    @GetMapping("/captcha")
+    public void generateCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String sRand = createRandomString(4);
+        HttpSession session = request.getSession();
+        session.setAttribute(CAPTCHA_SESSION_KEY, sRand);
+
+        response.setContentType("image/jpeg");
+        setNoCacheHeaders(response);
+        ServletOutputStream outputStream = response.getOutputStream();
+        generateCaptchaImage(sRand, outputStream);
+    }
+
+    private String createRandomString(int length) {
+        Random random = new Random();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            result.append(random.nextInt(10));
+        }
+        return result.toString();
+    }
+
+    private void generateCaptchaImage(String captchaString, OutputStream outputStream) throws IOException {
+        int width = 60, height = 20;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = image.getGraphics();
+
+        graphics.setColor(getRandomColor(200, 250));
+        graphics.fillRect(0, 0, width, height);
+        graphics.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        graphics.setColor(getRandomColor(160, 200));
+
+        Random random = new Random();
+        for (int i = 0; i < 155; i++) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            int xl = random.nextInt(12);
+            int yl = random.nextInt(12);
+            graphics.drawLine(x, y, x + xl, y + yl);
+        }
+
+        for (int i = 0; i < captchaString.length(); i++) {
+            String rand = captchaString.substring(i, i + 1);
+            graphics.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));
+            graphics.drawString(rand, 13 * i + 6, 16);
+        }
+
+        graphics.dispose();
+        ImageIO.write(image, "JPEG", outputStream);
+    }
+
+    private Color getRandomColor(int lowerBound, int upperBound) {
+        Random random = new Random();
+        if (lowerBound > 255) lowerBound = 255;
+        if (upperBound > 255) upperBound = 255;
+        int r = lowerBound + random.nextInt(upperBound - lowerBound);
+        int g = lowerBound + random.nextInt(upperBound - lowerBound);
+        int b = lowerBound + random.nextInt(upperBound - lowerBound);
+        return new Color(r, g, b);
+    }
+
+    private void setNoCacheHeaders(HttpServletResponse response) {
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+    }
     //学生的宿舍信息显示页面，负责显示可供学生选择的宿舍信息
     @PostMapping("dormitories")
     public Result dormitoriesList(HttpSession session, Model model) {
@@ -140,6 +217,7 @@ public class InformationController {
             return Result.error("更新失败", null);
         }
     }
+
     //学生申请校园卡
     @PostMapping("/applyCampusCard")
     public Result applyCampusCard(
@@ -148,21 +226,17 @@ public class InformationController {
             @RequestParam(value = "idNumber", required = false) String idNumber,
             @RequestParam(value = "schoolCardPassword", required = false) String schoolCardPassword,
             @RequestParam(value = "confirmSchoolCardPassword", required = false) String confirmSchoolCardPassword,
-            //@RequestParam(value = "captcha", required = false) String captcha,
+            @RequestParam(value = "captcha", required = false) String captcha,
             HttpSession session
     ) {
         // 检查所有必要的信息是否已经提供
         if (studentName == null || studentId == null || idNumber == null || schoolCardPassword == null || confirmSchoolCardPassword == null ) {
             return Result.error("请完成所有信息", null);
         }
-
-        // 从session中获取验证码
-        //String sessionCaptcha = (String) session.getAttribute("captcha");
-
-        // 检查验证码
-        //if (sessionCaptcha == null || !sessionCaptcha.equals(captcha)) {
-          //  return Result.error("验证码错误，请重新输入", null);
-       // }
+        String sessionCaptcha = (String) session.getAttribute("random");
+        if (captcha == null || !captcha.equals(sessionCaptcha)) {
+            return Result.error("验证码错误，请重新输入", null);
+        }
 
         // 检查两次输入的校园卡密码是否一致
         if (!schoolCardPassword.equals(confirmSchoolCardPassword)) {

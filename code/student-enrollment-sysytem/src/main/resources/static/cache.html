@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校园卡申请</title>
+    <script>
+        function refreshCaptcha() {
+            const captchaImage = document.getElementById('captchaImage');
+            // 确保每次请求都是唯一的，防止缓存
+            captchaImage.src = '/captcha?' + new Date().getTime();
+        }
+    </script>
+</head>
+<body onload="refreshCaptcha()"> <!-- 页面加载时自动刷新验证码 -->
+<form id="applyForm" action="/applyCampusCard" method="post">
+    <div>
+        <label for="studentName">学生姓名:</label>
+        <input type="text" id="studentName" name="studentName" required>
+    </div>
+    <div>
+        <label for="studentId">学生ID:</label>
+        <input type="text" id="studentId" name="studentId" required>
+    </div>
+    <div>
+        <label for="idNumber">身份证号码:</label>
+        <input type="text" id="idNumber" name="idNumber" required>
+    </div>
+    <div>
+        <label for="schoolCardPassword">校园卡密码:</label>
+        <input type="password" id="schoolCardPassword" name="schoolCardPassword" required>
+    </div>
+    <div>
+        <label for="confirmSchoolCardPassword">确认校园卡密码:</label>
+        <input type="password" id="confirmSchoolCardPassword" name="confirmSchoolCardPassword" required>
+    </div>
+    <div>
+        <label for="captcha">验证码:</label>
+        <input type="text" id="captcha" name="captcha" required>
+        <img id="captchaImage" src="/captcha" alt="Captcha Image" onclick="refreshCaptcha()">
+    </div>
+    <button type="submit">提交</button>
+</form>
+</body>
+</html>
