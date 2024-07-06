@@ -1,9 +1,11 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Institute;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.pojo.studentManageDTO;
+import com.kaifa.project.studentenrollmentsysytem.service.InstituteService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,8 @@ import java.util.List;
 public class StudentManageController {
     @Autowired
     StudentService studentService;
+    @Autowired
+    InstituteService instituteService;
     @PostMapping("/findStudents")
     public Result findStudents(@RequestParam(value = "studentId", required = false) String studentId,
                                @RequestParam(value = "studentName", required = false) String studentName,
@@ -43,12 +47,20 @@ public class StudentManageController {
     @PostMapping("/findStudents/state/{id}")
     public Result Updatestate(@PathVariable String id){
         Student student = studentService.getStudentById(id);
+        // 查找学生的学院
+        Institute institute = instituteService.getInstituteByName(student.getAcademy());
         if(student.isState3()==false) {
             student.setState3(true);
             boolean updateResult = studentService.updateStudentInfo(student);
+
             if (updateResult) {
+                if(student.isState1()==true&& student.isState2()==true){
+                    institute.setNumofarrivedstu(institute.getNumofarrivedstu() + 1);
+                    instituteService.updateInstituteInfo(institute);
+                }
                 return Result.success("状态修改成功", student);
-            } else {
+            }
+            else {
                 return Result.error("状态修改失败", null);
             }
         }

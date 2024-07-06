@@ -20,4 +20,11 @@ public class InstituteServiceImpl extends ServiceImpl<InstituteMapper, Institute
     }
 
     public List<Map<String, Object>> getStudentByInstitute(){return instituteMapper.getStudentByInstitute(); };
+    public Institute getInstituteByName(String instituteName) {
+        return instituteMapper.selectByName(instituteName);
+    }
+
+    public boolean updateInstituteInfo(Institute institute) {
+        return instituteMapper.updateById(institute) > 0;
+    }
 }

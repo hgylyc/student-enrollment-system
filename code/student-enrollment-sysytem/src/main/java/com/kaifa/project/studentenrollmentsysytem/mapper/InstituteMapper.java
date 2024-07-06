@@ -14,4 +14,6 @@ public interface InstituteMapper extends BaseMapper<Institute> {
     Integer getTotalNumOfArrivedStu();
     @Select("SELECT institute_name,num_of_student ,num_of_arrived_stu  FROM institute")
     List<Map<String, Object>> getStudentByInstitute();
+    @Select("SELECT * FROM institute WHERE institute_name = #{instituteName}")
+    Institute selectByName(String instituteName);
 }

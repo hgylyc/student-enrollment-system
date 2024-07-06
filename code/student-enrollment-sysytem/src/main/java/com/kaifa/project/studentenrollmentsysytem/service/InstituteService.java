@@ -9,4 +9,6 @@ import java.util.Map;
 public interface InstituteService extends IService<Institute> {
     Integer getTotalNumOfArrivedStu();
     List<Map<String, Object>> getStudentByInstitute();
+    Institute getInstituteByName(String instituteName);
+    boolean updateInstituteInfo(Institute institute);
 }
