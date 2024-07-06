@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface InstituteService extends IService<Institute> {
-    Integer getTotalNumOfArrivedStu();
+    List<Map<String, Object>>  getTotalNumOfArrivedStu();
     List<Map<String, Object>> getStudentByInstitute();
     Institute getInstituteByName(String instituteName);
     boolean updateInstituteInfo(Institute institute);

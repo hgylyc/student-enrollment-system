@@ -2,6 +2,7 @@ package com.kaifa.project.studentenrollmentsysytem.controller;
 
 import com.kaifa.project.studentenrollmentsysytem.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ public class AdministratorsController {
     private InstituteService instituteService;
     @Autowired
     private CourseService courseService;
-
+    @CrossOrigin(origins = "http://localhost:9529")
     @GetMapping("/data")
     public Map<String, Object> data() {
 
@@ -40,7 +41,7 @@ public class AdministratorsController {
         List<Map<String, Object>> NativeSpace = studentService.getNativeSpace();
         response.put("NativeSpace",NativeSpace);
         //总报道人数
-        Integer totalNumOfArrivedStu = instituteService.getTotalNumOfArrivedStu();
+        List<Map<String, Object>>  totalNumOfArrivedStu = instituteService.getTotalNumOfArrivedStu();
         response.put("totalNumOfArrivedStu", totalNumOfArrivedStu);
         //学院报道情况分布
         List<Map<String, Object>> studentByInstitute = instituteService.getStudentByInstitute();

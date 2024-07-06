@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class InstituteServiceImpl extends ServiceImpl<InstituteMapper, Institute> implements InstituteService {
     @Autowired
     private InstituteMapper instituteMapper;
-    public Integer getTotalNumOfArrivedStu() {
+    public List<Map<String, Object>>  getTotalNumOfArrivedStu() {
         return instituteMapper.getTotalNumOfArrivedStu();
     }
 

@@ -10,8 +10,8 @@ import java.util.Map;
 
 @Mapper
 public interface InstituteMapper extends BaseMapper<Institute> {
-    @Select("SELECT SUM(num_of_arrived_stu) FROM institute")
-    Integer getTotalNumOfArrivedStu();
+    @Select("SELECT SUM(num_of_arrived_stu), SUM(num_of_student) FROM institute")
+    List<Map<String, Object>>  getTotalNumOfArrivedStu();
     @Select("SELECT institute_name,num_of_student ,num_of_arrived_stu  FROM institute")
     List<Map<String, Object>> getStudentByInstitute();
     @Select("SELECT * FROM institute WHERE institute_name = #{instituteName}")
