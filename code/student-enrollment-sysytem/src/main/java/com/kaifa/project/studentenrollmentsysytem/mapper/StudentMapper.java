@@ -1,11 +1,13 @@
 package com.kaifa.project.studentenrollmentsysytem.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -48,4 +50,17 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("SELECT student_id AS studentId, student_name AS studentName, native_space AS nativeSpace, academy AS academy, major AS major, class_no AS classNo FROM student WHERE area_no = #{areaNo} AND dorm_no = #{dormNo} AND room_no = #{roomNo}")
     List<Map<String, Object>> findStudentsByDormitory(@Param("areaNo") String areaNo, @Param("dormNo") String dormNo, @Param("roomNo") String roomNo);
 
+    //这个方法用于统计在特定日期（date）内报道的学生人数
+    @Select("SELECT COUNT(*) FROM student WHERE DATE(time_node) = #{date} AND time_node BETWEEN '2024-07-05 00:00:00' AND '2024-07-09 23:59:59'")
+    int countByDate(String date);
+   //这个默认方法用于查找今天报道的学生列表
+    default List<Student> findReportedStudentsToday() {
+        LocalDateTime startOfToday = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfToday = startOfToday.plusDays(1).minusSeconds(1);
+
+        QueryWrapper<Student> queryWrapper = new QueryWrapper<>();
+        queryWrapper.between("time_node", startOfToday, endOfToday);
+
+        return this.selectList(queryWrapper);
+    }
 }

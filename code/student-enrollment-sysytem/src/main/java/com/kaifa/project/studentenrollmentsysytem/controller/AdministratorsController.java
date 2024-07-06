@@ -62,6 +62,13 @@ public class AdministratorsController {
         // 获取选课率最低的10个课程
         List<Map<String, Object>> lowestEnrollmentRateCourses = courseService.getLowestEnrollmentRateCourses();
         response.put("lowestEnrollmentRateCourses", lowestEnrollmentRateCourses);
+        //
+        List<Map<String, Integer>> getDailyReportCount=studentService.getDailyReportCount();
+        response.put("DailyReportCount",getDailyReportCount);
+
+        Map<String, Integer> getTodayReportCount=studentService.getTodayReportCount();
+        response.put("TodayCount",getTodayReportCount);
+
         return response;
     }
 }

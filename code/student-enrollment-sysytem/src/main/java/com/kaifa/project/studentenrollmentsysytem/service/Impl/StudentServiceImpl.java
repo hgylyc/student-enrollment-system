@@ -16,9 +16,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -112,7 +112,32 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         });
         return students;
     }
+    //
+    public List<Map<String, Integer>> getDailyReportCount() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<Map<String, Integer>> dailyCountList = new ArrayList<>();
 
+        for (int i = 5; i <= 9; i++) {
+            String date = LocalDate.of(2024, 7, i).format(formatter);
+            int count = studentMapper.countByDate(date);
+
+            Map<String, Integer> dailyCount = new HashMap<>();
+            dailyCount.put(date, count);
+            dailyCountList.add(dailyCount);
+        }
+
+        return dailyCountList;
+    }
+
+    public Map<String, Integer> getTodayReportCount() {
+        LocalDate today = LocalDate.now();
+        String todayDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        int count = studentMapper.countByDate(todayDate);
+
+        Map<String, Integer> response = new HashMap<>();
+        response.put(todayDate, count);
+        return response;
+    }
 
 
     public List<Map<String, Object>> getNativeSpace(){
