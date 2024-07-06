@@ -25,6 +25,10 @@ public class InstituteServiceImpl extends ServiceImpl<InstituteMapper, Institute
     public List<Map<String, Object>> getStudentByInstitute() {
         List<Map<String, Object>>institutes=instituteMapper.getStudentByInstitute();
         institutes.forEach(institute -> {
+            int numOfStudents = (int) institute.get("num_of_student");
+            int numOfArrivedStudents = (int) institute.get("num_of_arrived_stu");
+            double arrivalRate = (double) numOfArrivedStudents / numOfStudents;
+            institute.put("arrival_rate", arrivalRate);
 
             String instituteNameStr = (String)institute.get("institute_name");
             char a = instituteNameStr.charAt(0);

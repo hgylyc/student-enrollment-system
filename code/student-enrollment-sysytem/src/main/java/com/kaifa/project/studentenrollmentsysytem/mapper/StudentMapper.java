@@ -22,8 +22,10 @@ public interface StudentMapper extends BaseMapper<Student> {
 
     @Select("SELECT state1,state2,state3 FROM student WHERE student_id = #{stuId}")
     List<Map<String, Object>> selectStateById(@Param("stuId") String stuId);
+
     @Select("SELECT figure_url, email, phone_number, student_id, academy FROM student WHERE student_id = #{studentId}")
     Student getStudentInfoById(String studentId);
+
     //完成学生查询功能
     @Select("<script>" +
             "SELECT student_id AS studentId, student_name AS studentName, academy, state1, state2, state3 " +
@@ -42,5 +44,8 @@ public interface StudentMapper extends BaseMapper<Student> {
     List<Student> selectStudents(@Param("studentId") String studentId,
                                  @Param("studentName") String studentName,
                                  @Param("academy") String academy);
-}
 
+    @Select("SELECT student_id AS studentId, student_name AS studentName, native_space AS nativeSpace, academy AS academy, major AS major, class_no AS classNo FROM student WHERE area_no = #{areaNo} AND dorm_no = #{dormNo} AND room_no = #{roomNo}")
+    List<Map<String, Object>> findStudentsByDormitory(@Param("areaNo") String areaNo, @Param("dormNo") String dormNo, @Param("roomNo") String roomNo);
+
+}

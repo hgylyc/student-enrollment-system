@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -101,6 +102,19 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         dto.setState3(student.isState3());
         return dto;
     }
+    //查看舍友
+    public List<Map<String, Object>> findStudentsByDormitory(String areaNo, String dormNo, String roomNo) {
+        List<Map<String, Object>> students =studentMapper.findStudentsByDormitory(areaNo, dormNo, roomNo);
+        students.forEach(student ->{
+            String NameStr = (String)student.get("academy");
+            char a = NameStr.charAt(0);
+            student.put("Academy", Mapping.reverseMapCollege(a));
+        });
+        return students;
+    }
+
+
+
     public List<Map<String, Object>> getNativeSpace(){
         return studentMapper.getNativeSpace();
     };
