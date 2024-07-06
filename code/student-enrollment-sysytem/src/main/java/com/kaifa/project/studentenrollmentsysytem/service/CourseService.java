@@ -5,6 +5,7 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CourseService extends IService <Course>{
     List<Course> getCoursesByStudentAcademy(String studentId);
@@ -21,4 +22,6 @@ public interface CourseService extends IService <Course>{
     CourseDTO getCourseDetails(String courseId);
 
     Course getCourseById(String courseId);
+    //返回10个选课率最低的课程信息
+    List<Map<String, Object>> getLowestEnrollmentRateCourses();
 }

@@ -1,9 +1,6 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
-import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
-import com.kaifa.project.studentenrollmentsysytem.service.InstituteService;
-import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
-import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
+import com.kaifa.project.studentenrollmentsysytem.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,6 +23,8 @@ public class AdministratorsController {
     private DormitoryService dormitoryService;
     @Autowired
     private InstituteService instituteService;
+    @Autowired
+    private CourseService courseService;
 
     @GetMapping("/data")
     public Map<String, Object> data() {
@@ -55,6 +54,13 @@ public class AdministratorsController {
         //入住情况园区分布
         List<Map<String, Object>> studentCountByArea = dormitoryService.getStudentCountByArea();
         response.put("studentCountByArea", studentCountByArea);
+        //报道率最低的三个学院
+        List<Map<String, Object>> lowestArrivalRateInstitutes = instituteService.getInstitutesWithLowestArrivalRate();
+        response.put("lowestArrivalRateInstitutes", lowestArrivalRateInstitutes);
+
+        // 获取选课率最低的10个课程
+        List<Map<String, Object>> lowestEnrollmentRateCourses = courseService.getLowestEnrollmentRateCourses();
+        response.put("lowestEnrollmentRateCourses", lowestEnrollmentRateCourses);
         return response;
     }
 }

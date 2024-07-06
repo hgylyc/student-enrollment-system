@@ -6,6 +6,7 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.jdbc.SQL;
 
@@ -56,4 +57,6 @@ public interface CourseMapper extends BaseMapper<Course> {
             return sql;
         }
     }
+    @Select("SELECT * FROM course")
+    List<Course> getAllCourses();
 }

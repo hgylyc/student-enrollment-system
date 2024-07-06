@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -163,7 +165,26 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         }
         return false;
     }
+    public List<Map<String, Object>> getLowestEnrollmentRateCourses() {
+        List<Course> courses = courseMapper.getAllCourses();
 
+        // 计算选课率并排序
+        List<Map<String, Object>> sortedCourses = courses.stream()
+                .map(course -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("courseName", course.getCourseName());
+                    map.put("courseId", course.getCourseId());
+                    map.put("teacherName", course.getTeacherName());
+                    double enrollmentRate = (double) course.getCurrentNumOfStu() / course.getCeilingOfPersonnel();
+                    map.put("enrollmentRate", enrollmentRate);
+                    return map;
+                })
+                .sorted((c1, c2) -> Double.compare((double) c1.get("enrollmentRate"), (double) c2.get("enrollmentRate")))
+                .limit(10)
+                .collect(Collectors.toList());
+
+        return sortedCourses;
+    }
 
 
 }

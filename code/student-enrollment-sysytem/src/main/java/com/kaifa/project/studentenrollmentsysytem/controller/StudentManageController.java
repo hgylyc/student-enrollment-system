@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +52,7 @@ public class StudentManageController {
         Institute institute = instituteService.getInstituteByName(student.getAcademy());
         if(student.isState3()==false) {
             student.setState3(true);
+            student.setTimeNode(LocalDateTime.now());
             boolean updateResult = studentService.updateStudentInfo(student);
 
             if (updateResult) {
