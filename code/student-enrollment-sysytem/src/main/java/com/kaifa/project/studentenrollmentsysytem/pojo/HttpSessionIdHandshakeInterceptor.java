@@ -23,6 +23,7 @@ public class HttpSessionIdHandshakeInterceptor implements HandshakeInterceptor {
         if (request instanceof ServletServerHttpRequest) {
             HttpServletRequest servletRequest = ((ServletServerHttpRequest) request).getServletRequest();
             HttpSession session = servletRequest.getSession();
+            System.out.println(session.getAttribute("shakehands"));
             System.out.println(session.getAttribute("username"));
             System.out.println(session.getAttribute("role"));
             String userId = (String) session.getAttribute("username"); // 获取用户 ID

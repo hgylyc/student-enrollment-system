@@ -9,6 +9,10 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
+import org.bytedeco.opencv.global.opencv_imgcodecs;
+import org.bytedeco.opencv.opencv_core.Mat;
+import org.bytedeco.opencv.opencv_core.RectVector;
+import org.bytedeco.opencv.opencv_objdetect.CascadeClassifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
@@ -365,6 +369,33 @@ public class InformationController {
         headers.setContentType(MediaType.parseMediaType(mimeType));
         headers.setContentLength(imageBytes.length);
         return ResponseEntity.ok().headers(headers).body(imageBytes);
+    }
+
+
+    @PostMapping("pictest")
+    public void pintest(HttpSession session , @RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String username =(String) session.getAttribute("username");
+        if (multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("文件为空");
+        }
+        // 将MultipartFile转换为File
+        File file = convertMultiPartToFile(multipartFile);
+
+        // 指定人脸检测的分类器文件路径
+        String classifierPath = "C:/Users/monster/Desktop/haarcascade_frontalface_default.xml";
+
+        // 加载分类器
+        CascadeClassifier faceDetector = new CascadeClassifier(classifierPath);
+
+        // 指定图像文件路径
+        File imageFile = new File("path/to/your/image.jpg");
+        // 读取图像文件
+        Mat image = opencv_imgcodecs.imread(file.getAbsolutePath());
+        // 进行人脸检测
+        RectVector faces = new RectVector();
+        faceDetector.detectMultiScale(image, faces);
+        // 打印检测到的人脸数量
+        System.out.println("检测到 " + faces.size() + " 张人脸");
     }
 
 
