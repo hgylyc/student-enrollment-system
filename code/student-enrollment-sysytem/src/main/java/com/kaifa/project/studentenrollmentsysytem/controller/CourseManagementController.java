@@ -1,19 +1,19 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
-import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
-import com.kaifa.project.studentenrollmentsysytem.pojo.CourseCreate;
-import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
+import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
-import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
+import com.kaifa.project.studentenrollmentsysytem.service.CourseTimeService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @RestController
@@ -23,6 +23,9 @@ public class CourseManagementController {
     private CourseService courseService;
     @Autowired
     private TeacherService teacherService;
+
+    @Autowired
+    private CourseTimeService courseTimeService;
 
     @GetMapping   //实现初始化
     public List<CourseDTO> initialClasses(){
@@ -48,22 +51,76 @@ public class CourseManagementController {
         return response;
     }
 
-    @PostMapping("coursecreate")    //创建课程
-    public String courseCreate(HttpSession session,@RequestBody CourseCreate createCourse) {
-        if (!session.getAttribute("role") .equals("teacher") ){
-            return "role wrong";
-        }
+    @PostMapping("coursecreate")    //创建课程  /over
+    public Map<String, Object> courseCreate(HttpSession session,@RequestParam("courseName") String courseName,
+                                            @RequestParam("teacherName") String teacherName,
+                                            @RequestParam("teacherId") String teacherId,
+                                            @RequestParam("ceilingOfPersonnel") int ceilingOfPersonnel,
+                                            @RequestParam("courseType") String courseType,
+                                            @RequestParam("score") String score,
+                                            @RequestParam("semester") String semester,
+                                            @RequestParam("institution") String institution,
+                                            @RequestParam("identificationCode") String identificationCode,
+                                            @RequestParam("introduction") String introduction,
+                                            @RequestParam("time") Integer time,
+                                            @RequestParam("status") String status,
+                                            @RequestParam(value = "classRoomNo", required = false) String classRoomNo) {
+        System.out.println(courseName);
+        CourseCreate courseCreate = new CourseCreate();
+        courseCreate.setCourseName(courseName);
+        courseCreate.setStatus(status);
+        courseCreate.setTeacherName(teacherName);
+        courseCreate.setTeacherId(teacherId);
+        courseCreate.setCeilingOfPersonnel(ceilingOfPersonnel);
+        courseCreate.setCourseType(courseType);
+        courseCreate.setScore(score);
+        courseCreate.setSemester(semester);
+        courseCreate.setInstitution(institution);
+        courseCreate.setIdentificationCode(identificationCode);
+        courseCreate.setIntroduction(introduction);
+        courseCreate.setTime(time);
+        courseCreate.setClassRoomNo(classRoomNo);
+        Map<String, Object> response =new HashMap<>();
+//        if (!session.getAttribute("role") .equals("teacher") ){
+//            response.put("status","role wrong");
+//            return response;
+//        }
         //检验teacher字段合法性
-        Teacher teacher = teacherService.getById(createCourse.teacherId);
+        Teacher teacher = teacherService.getById(courseCreate.teacherId);
         if(teacher==null)
-                return "teacher not exist";
-        else if(!teacher.getTeacherName().equals(createCourse.getTeacherName()))
         {
-            return "teacher name wrong";
+            response.put("status","teacher not exist");
+            return response;
         }
-        Course course=new Course(createCourse);
-        courseService.save(course);
-        return course.getCourseId();
+        else if(!teacher.getTeacherName().equals(courseCreate.getTeacherName()))
+        {
+            response.put("status","teacher name wrong");
+            return response;
+        }
+        Course course=new Course(courseCreate);
+        try {
+            courseService.save(course);
+            response.put("status", "success");
+        } catch (DataIntegrityViolationException e) {
+            response.put("status", "Duplicate entry for courseId");
+        }
+
+        // 同步更新 coursetime 表
+        CourseTime courseTime = new CourseTime();
+        courseTime.setCourseId(course.getCourseId());
+        courseTime.setCourseName(course.getCourseName());
+        courseTime.setClassroom(courseCreate.getClassRoomNo()); // 使用 createCourse 的教室号
+
+        // 随机生成 coursetime 属性
+        Random random = new Random();
+        int dayOfWeek = random.nextInt(7) + 1; // 1-7 表示星期几
+        int period = random.nextInt(6) + 1; // 1-6 表示第几节
+        String courseTimeValue = "" + dayOfWeek + period;
+        courseTime.setCourseTime(courseTimeValue);
+
+        courseTimeService.save(courseTime);
+
+        return response;
     }
 
     @PostMapping("coursedelete")    //删除课程

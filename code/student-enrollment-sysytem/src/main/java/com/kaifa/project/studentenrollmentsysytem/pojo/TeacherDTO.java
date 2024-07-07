@@ -11,7 +11,7 @@ public class TeacherDTO {
     private String introduction;
     private String figureUrl;
     private String temail;
-    private String institution;
+
 
     public TeacherDTO(){}
 
@@ -24,7 +24,6 @@ public class TeacherDTO {
         this.figureUrl = teacher.getFigureUrl();
         this.temail = teacher.getTemail();
         String str = teacher.getTacademy();
-        this.institution = Mapping.reverseMapCollege(str.charAt(0));
     }
 
 

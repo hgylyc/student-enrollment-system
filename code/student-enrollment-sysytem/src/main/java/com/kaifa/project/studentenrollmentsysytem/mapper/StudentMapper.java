@@ -42,5 +42,9 @@ public interface StudentMapper extends BaseMapper<Student> {
     List<Student> selectStudents(@Param("studentId") String studentId,
                                  @Param("studentName") String studentName,
                                  @Param("academy") String academy);
+
+    @Select("SELECT academy FROM student WHERE student_id = #{studentId}")
+    String getAcademyByStudentId(@Param("studentId") String studentId);
+
 }
 

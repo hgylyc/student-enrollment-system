@@ -19,26 +19,31 @@ public interface TeacherMapper extends BaseMapper<Teacher> {
 
     class TeacherSqlBuilder {
         public static String buildSelectTeachers(@Param("filter") final TeacherDTO filter) {
-            String sql = new SQL() {{
+            return new SQL() {{
                 SELECT("*");
                 FROM("teacher");
                 if (filter.getTeacherId() != null && !filter.getTeacherId().isEmpty()) {
                     WHERE("teacher_id = #{filter.teacherId}");
                 }
                 if (filter.getTeacherName() != null && !filter.getTeacherName().isEmpty()) {
-                    WHERE("teacher_name = #{filter.teacherName}");
+                    WHERE("teacher_name LIKE #{filter.teacherName}");
                 }
                 if (filter.getTacademy() != null && !filter.getTacademy().isEmpty()) {
-                    char ch = Mapping.mapCollege(filter.getTacademy());
                     WHERE("tacademy = #{filter.tacademy}");
                 }
                 if (filter.getTitle() != null && !filter.getTitle().isEmpty()) {
                     WHERE("title = #{filter.title}");
                 }
+                if (filter.getIntroduction() != null && !filter.getIntroduction().isEmpty()) {
+                    WHERE("introduction = #{filter.introduction}");
+                }
+                if (filter.getFigureUrl() != null && !filter.getFigureUrl().isEmpty()) {
+                    WHERE("figure_url = #{filter.figureUrl}");
+                }
+                if (filter.getTemail() != null && !filter.getTemail().isEmpty()) {
+                    WHERE("temail = #{filter.temail}");
+                }
             }}.toString();
-
-            System.out.println("Generated SQL: " + sql);
-            return sql;
         }
     }
 }

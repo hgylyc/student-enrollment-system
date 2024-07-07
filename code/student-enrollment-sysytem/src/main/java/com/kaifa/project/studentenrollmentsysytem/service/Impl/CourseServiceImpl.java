@@ -1,13 +1,18 @@
 package com.kaifa.project.studentenrollmentsysytem.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kaifa.project.studentenrollmentsysytem.mapper.CourseMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.StudentMapper;
 import com.kaifa.project.studentenrollmentsysytem.mapper.TeacherMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -128,15 +133,59 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         return courseMapper.selectCourses(filter);
     }
 
+
+
     @Override
     public CourseDTO getCourseDetails(String courseId) {
-        Course course = baseMapper.selectById(courseId);
+        // 通过 courseId 查询课程信息
+        Course course = courseMapper.selectById(courseId);
         if (course != null) {
-            // 获取教师信息列表
-            List<Teacher> teachers = teacherMapper.selectList(new QueryWrapper<Teacher>().eq("course_id", courseId));
-            List<TeacherDTO> teacherDTOs = teachers.stream().map(TeacherDTO::new).collect(Collectors.toList());
-            return new CourseDTO(course, teacherDTOs);
+            // 从课程信息中获取 teacher_id
+            String teacherId = course.getTeacherId();
+            if (teacherId != null) {
+                // 通过 teacher_id 查询教师信息
+                Teacher teacher = teacherMapper.selectById(teacherId);
+                if (teacher != null) {
+                    List<TeacherDTO> teacherDTOs = new ArrayList<>();
+                    teacherDTOs.add(new TeacherDTO(teacher));
+                    return new CourseDTO(course, teacherDTOs);
+                }
+            }
         }
+        return null;
+    }
+
+
+    @Override
+    public CourseDTO getCourseDetailsByCourseName(String courseName) {
+        System.out.println("Fetching course details for courseName: " + courseName); // 调试日志
+
+        // 通过 courseName 查询所有匹配的课程
+        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("course_name", courseName);
+        List<Course> courses = baseMapper.selectList(queryWrapper);
+
+        if (!courses.isEmpty()) {
+            System.out.println("Courses found: " + courses.size()); // 调试日志
+            List<TeacherDTO> teacherDTOs = new ArrayList<>();
+            for (Course course : courses) {
+                // 从课程信息中获取 teacher_id
+                String teacherId = course.getTeacherId();
+                System.out.println("Checking teacherId: " + teacherId); // 调试日志
+
+                if (teacherId != null) {
+                    // 通过 teacher_id 查询教师信息
+                    Teacher teacher = teacherMapper.selectById(teacherId);
+                    if (teacher != null) {
+                        System.out.println("Teacher found: " + teacher.getTeacherName()); // 调试日志
+                        teacherDTOs.add(new TeacherDTO(teacher));
+                    }
+                }
+            }
+            // 返回第一个课程的详细信息和教师列表
+            return new CourseDTO(courses.get(0), teacherDTOs);
+        }
+        System.out.println("No courses found for courseName: " + courseName); // 调试日志
         return null;
     }
 
@@ -164,6 +213,33 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         return false;
     }
 
+    @Override
+    public List<Course> getCoursesExcludingStudentAcademy(String studentId) {
+        // 获取学生信息
+        Student student = studentMapper.selectById(studentId);
+        if (student == null) {
+            System.out.println("学生ID " + studentId + " 不存在");
+            return null;
+        }
 
+        String academy = student.getAcademy();
+        System.out.println("学生ID: " + studentId + ", 学院: " + academy);
+
+        // 使用QueryWrapper进行条件查询，排除学生所在学院的课程
+        QueryWrapper<Course> queryWrapper = new QueryWrapper<>();
+        queryWrapper.notLike("course_id", academy);
+
+        List<Course> nonMatchingCourses = baseMapper.selectList(queryWrapper);
+        System.out.println("不匹配的课程数量: " + nonMatchingCourses.size());
+
+        return nonMatchingCourses;
+    }
+
+    @Override
+    public List<Course> getAllCourses() {
+        List<Course> courses = baseMapper.selectList(null);
+        System.out.println("初始化成功");
+        return courses;
+    }
 
 }

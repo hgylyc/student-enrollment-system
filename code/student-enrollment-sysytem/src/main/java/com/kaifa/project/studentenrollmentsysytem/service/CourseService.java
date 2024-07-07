@@ -1,10 +1,17 @@
 package com.kaifa.project.studentenrollmentsysytem.service;
 
+
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.github.pagehelper.PageInfo;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Course;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
 
 import java.util.List;
+@Service
 
 public interface CourseService extends IService <Course>{
     List<Course> getCoursesByStudentAcademy(String studentId);
@@ -21,4 +28,10 @@ public interface CourseService extends IService <Course>{
     CourseDTO getCourseDetails(String courseId);
 
     Course getCourseById(String courseId);
+
+    CourseDTO getCourseDetailsByCourseName(String courseName);
+
+    List<Course> getCoursesExcludingStudentAcademy(String studentId);
+
+    List<Course> getAllCourses();
 }

@@ -6,6 +6,7 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.CourseDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.jdbc.SQL;
 
@@ -15,6 +16,8 @@ import java.util.List;
 public interface CourseMapper extends BaseMapper<Course> {
     @SelectProvider(type = CourseSqlBuilder.class, method = "buildSelectCourses")
     List<Course> selectCourses(@Param("filter") CourseDTO filter);
+    @Select("SELECT * FROM course WHERE academy = #{studentId}")
+    List<Course> getCoursesByStudentAcademy(String studentId);
 
     class CourseSqlBuilder {
         public static String buildSelectCourses(@Param("filter") final CourseDTO filter) {
