@@ -80,9 +80,16 @@ public class AdministratorsController {
         Map<String, Integer> getTodayReportCount=studentService.getTodayReportCount();
         response.put("TodayCount",getTodayReportCount);
         //返回预测的人数
+//        List<Map<String, Object>> dailyReportCount = PythonRunner.runPythonScript();
+//        response.put("PredictCount", dailyReportCount);
+
         List<Map<String, Object>> dailyReportCount = PythonRunner.runPythonScript();
-        response.put("PredictCount", dailyReportCount);
+        response.put("DailypreditCount", dailyReportCount);
+        //返回今天的预测人数
+        Map<String, Object> todayReportCount = PythonRunner.getTodayPrediction();
+        response.put("TodaypredictCount", todayReportCount);;
         return response;
+
     }
 
     @GetMapping("test")

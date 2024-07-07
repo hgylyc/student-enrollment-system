@@ -29,5 +29,6 @@ public interface StudentService extends IService<Student> {
     //
     List<Map<String, Integer>> getDailyReportCount();
     Map<String, Integer> getTodayReportCount();
+    List<Map<String, Object>> findStusByDormitory(String areano, String dormno, String roomno);
 
 }

@@ -1,11 +1,8 @@
 package com.kaifa.project.studentenrollmentsysytem.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.*;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 import java.util.Map;
@@ -58,4 +55,12 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
                 "AND dorm_no = (SELECT dorm_no FROM student WHERE student_id = #{stuId}) " +
                 "AND room_no = (SELECT room_no FROM student WHERE student_id = #{stuId})")
         List<Map<String, Object>> myDormitory(@Param("stuId") String stuId);
+
+        //宿舍的删除
+        @Delete("DELETE FROM dormitory WHERE area_no = #{areano} AND dorm_no = #{dormno} AND room_no = #{roomno}")
+        int deleteByDormitory(@Param("areano") String areano, @Param("dormno") String dormno, @Param("roomno") String roomno);
+        //宿舍的查找
+        @Select("SELECT * FROM dormitory WHERE area_no = #{areano} AND dorm_no = #{dormno} AND room_no = #{roomno}")
+        Dormitory selectByDormitory(@Param("areano") String areano, @Param("dormno") String dormno, @Param("roomno") String roomno);
+
 }

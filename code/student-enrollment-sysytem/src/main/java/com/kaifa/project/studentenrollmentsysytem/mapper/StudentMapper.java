@@ -68,4 +68,11 @@ public interface StudentMapper extends BaseMapper<Student> {
 
         return this.selectList(queryWrapper);
     }
+    //查找值定宿舍的学生
+    @Select("SELECT student_id AS studentId, student_name AS studentName, native_space AS nativeSpace, academy, major, class_no AS classNo " +
+            "FROM student " +
+            "WHERE area_no = #{areano} AND dorm_no = #{dormno} AND room_no = #{roomno}")
+    List<Map<String, Object>> findStusByDormitory(@Param("areano") String areano,
+                                                      @Param("dormno") String dormno,
+                                                      @Param("roomno") String roomno);
 }
