@@ -171,12 +171,14 @@ public class CourseManagementController {
 
     @PostMapping("coursedelete")    //删除课程
     public Map<String, Object> courseDelete(HttpSession session,@RequestParam("courseId") String courseId){
-//        System.out.println(session.getAttribute("role"));
-//        if (!session.getAttribute("role") .equals( "teacher")){
-//            return "role wrong";
-//        }
-        boolean isRemoved=courseService.removeById(courseId);
+        System.out.println(session.getAttribute("role"));
         Map<String, Object> response =new HashMap<>();
+        if (!session.getAttribute("role") .equals( "teacher")){
+            response.put("status","role wrong");
+            return response;
+        }
+        boolean isRemoved=courseService.removeById(courseId);
+
         if(isRemoved)
         {
             response.put("status","success");

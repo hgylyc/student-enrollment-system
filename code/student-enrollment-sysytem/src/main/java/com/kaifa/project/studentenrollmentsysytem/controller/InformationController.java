@@ -398,5 +398,30 @@ public class InformationController {
         System.out.println("检测到 " + faces.size() + " 张人脸");
     }
 
+    @PostMapping("uploadtest")
+    public Map<String, Object> upload(@RequestParam("file") MultipartFile multipartFile) throws IOException {
+        if (multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("文件为空");
+        }
+        // 将MultipartFile转换为File
+        File file = convertMultiPartToFile(multipartFile);
+        // 创建OSSClient实例
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicReadWrite);
+        // 构造PutObject请求
+        String fileName = multipartFile.getOriginalFilename();
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+        // 上传文件
+        ossClient.putObject(putObjectRequest);
+        // 关闭OSSClient
+        ossClient.shutdown();
+        // 保存文件的访问URL
+        String url = "https://" + bucketName + "." + endpoint + "/" + fileName;
+        System.out.println(url);
+        Map<String, Object> response =new HashMap<>();
+        response.put("status","success");
+        return response;
+    }
+
 
 }

@@ -30,17 +30,13 @@ public class LoginController {
                                      HttpServletResponse response,
                                      @RequestParam("username") String username,
                                      @RequestParam("password") String password) {
-        System.out.println("begin");
+        //获取一个session
         HttpSession session = request.getSession();
-        // 使现有的会话无效并创建一个新会话
-        //session = request.getSession(true);
         // 设置会话Cookie
         Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
         response.addCookie(sessionCookie);
         sessionCookie.setPath("/");
-        response.addCookie(sessionCookie);
 
-        System.out.println("work");
         Map<String, Object> responses = new HashMap<>();
         Account account= accountService.getById(username);
         System.out.println("begin");
