@@ -48,7 +48,10 @@ public interface CourseMapper extends BaseMapper<Course> {
                     WHERE("score = #{filter.score}");
                 }
                 if (filter.getFilled() != null && filter.getFilled()) {
-                    WHERE("ceiling_of_personnel < current_num_of_stu");
+                    WHERE("ceiling_of_personnel <= current_num_of_stu");
+                }
+                if(filter.getFilled() != null && !filter.getFilled()){
+                    WHERE("ceiling_of_personnel > current_num_of_stu");
                 }
             }}.toString();
 

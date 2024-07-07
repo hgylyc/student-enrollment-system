@@ -1,9 +1,6 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 import com.kaifa.project.studentenrollmentsysytem.pojo.*;
-import com.kaifa.project.studentenrollmentsysytem.service.AccountService;
-import com.kaifa.project.studentenrollmentsysytem.service.EmailService;
-import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
-import com.kaifa.project.studentenrollmentsysytem.service.VerificationService;
+import com.kaifa.project.studentenrollmentsysytem.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
-
+// 3/5
 //http:/localhost:8088/login
 @RestController
 @RequestMapping("login")
@@ -25,8 +22,10 @@ public class LoginController {
     private AccountService accountService;
     @Autowired
     private StudentService studentService;
+    @Autowired
+    private TeacherService teacherService;
 
-    @PostMapping
+    @PostMapping   //over
     public Map<String, Object> login(HttpServletRequest request,
                                      HttpServletResponse response,
                                      @RequestParam("username") String username,
@@ -52,11 +51,29 @@ public class LoginController {
         }
         else
         {
+            String email=new String();
+            String url =new String();
+            if(account.identity.equals("teacher"))
+            {
+                Teacher teacher=teacherService.getById(username);
+                email=teacher.getTemail();
+                url=teacher.getFigureUrl();
+            }
+            else
+            {
+                Student student =studentService.getById(username);
+                email=student.getEmail();
+                url=student.getFigureUrl();
+            }
             session.setAttribute("username", username);
             session.setAttribute("role", account.identity);
             responses.put("status", "success");
             responses.put("username",username);
             responses.put("role",account.identity);
+            responses.put("accountName",account.accountNo);
+            responses.put("email",email);
+            responses.put("url",url);
+
         }
         return responses;
     }
@@ -70,7 +87,10 @@ public class LoginController {
                                         @RequestParam("code") String code  ){
         Student student =studentService.getById(studentId);
         Map<String, Object> response =new HashMap<>();
-        if(verificationService.verifyCode(email,code))
+        for (Map.Entry<String, String> entry : verificationService.verificationCodes.entrySet()) {
+            System.out.println("Email: " + entry.getKey() + ", Code: " + entry.getValue());
+        }
+        if(!verificationService.verifyCode(email,code))
         {
             response.put("status","code wrong");
             return response;
@@ -93,18 +113,20 @@ public class LoginController {
         response.put("status","success");
         return response;
     }
-    @RequestMapping("/logout")
-    public String logout(HttpSession session) {
+    @GetMapping("/logout")
+    public Map<String, Object> logout(HttpSession session) {
         // 销毁会话
         session.invalidate();
-        return "redirect:/login";
+        Map<String, Object> response =new HashMap<>();
+        response.put("status","success");
+        return response;
     }
 
     @Autowired
     private EmailService emailService;
     @Autowired
     private VerificationService verificationService;
-    @PostMapping("/sendVerificationCode")
+    @PostMapping("/sendVerificationCode")     //over
     public Map<String, Object> sendVerificationCode(@RequestParam String email) {
         String code = VerificationCodeGenerator.generateVerificationCode();
         emailService.sendVerificationCode(email, code);
@@ -113,20 +135,20 @@ public class LoginController {
         response.put("status","success");
         return response;
     }
-    @PostMapping("/verify")
-    public Map<String, Object> verify(@RequestParam String email,@RequestParam String code) {
-        Map<String, Object> response =new HashMap<>();
-        if(verificationService.verifyCode(email,code))
-        {
-            response.put("status","right");
-        }
-        else {
-            response.put("status", "wrong");
-        }
-        return response;
-    }
+//    @PostMapping("/verify")
+//    public Map<String, Object> verify(@RequestParam String email,@RequestParam String code) {
+//        Map<String, Object> response =new HashMap<>();
+//        if(verificationService.verifyCode(email,code))
+//        {
+//            response.put("status","right");
+//        }
+//        else {
+//            response.put("status", "wrong");
+//        }
+//        return response;
+//    }
 
-    @PostMapping("findpasswordback")
+    @PostMapping("findpasswordback")  //over
     public Map<String, Object> findPasswordBack(@RequestParam String username,
                                                 @RequestParam String email,
                                                 @RequestParam String password,
@@ -136,6 +158,7 @@ public class LoginController {
         {
             Account account=accountService.getById(username);
             account.setPassword(password);
+            accountService.updateById(account);
             verificationService.removeVerificationCode(email,code);
             response.put("status","success");
         }

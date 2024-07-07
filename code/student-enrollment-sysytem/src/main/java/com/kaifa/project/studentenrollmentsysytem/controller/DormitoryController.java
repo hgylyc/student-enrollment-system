@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import java.util.List;
-
+// 0/1
 @RestController
 @RequestMapping("/dormitory")
 public class DormitoryController {

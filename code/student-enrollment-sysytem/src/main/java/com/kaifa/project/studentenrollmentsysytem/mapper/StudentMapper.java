@@ -17,7 +17,7 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("SELECT count(*) ,sum(state1),sum(state2),sum(state3) from student")
     List<Map<String, Object>> getProcessState();
 
-    @Select("SELECT DATE(time_node) AS date_only, COUNT(*) FROM student GROUP BY date_only")
+    @Select("SELECT DATE(time_node) AS date_only, COUNT(*) FROM student WHERE DATE(time_node) IS NOT NULL GROUP BY date_only")
     List<Map<String, Object>> getTimeNode();
 
     @Select("SELECT state1,state2,state3 FROM student WHERE student_id = #{stuId}")

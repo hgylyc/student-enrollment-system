@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Chat</title>
+</head>
+<body>
+<h2>Student Chat</h2>
+<div id="chatWindow"></div>
+<input type="text" id="messageInput" placeholder="Type a message">
+<button id="sendButton">Send</button>
+<p id="customerId">Customer ID: 10000000</p>
+
+<script>
+  const customerId = 10000000;
+  const chatWindow = document.getElementById('chatWindow');
+  const messageInput = document.getElementById('messageInput');
+  const sendButton = document.getElementById('sendButton');
+
+  const socket = new WebSocket('ws://your_server_url/chat');
+
+  socket.onmessage = function(event) {
+    const message = document.createElement('p');
+    message.textContent = event.data;
+    chatWindow.appendChild(message);
+  };
+
+  sendButton.addEventListener('click', function() {
+    const message = `${customerId}:${messageInput.value}`;
+    socket.send(message);
+    messageInput.value = '';
+  });
+</script>
+</body>
+</html>

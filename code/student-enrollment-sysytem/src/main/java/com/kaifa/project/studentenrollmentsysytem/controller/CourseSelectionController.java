@@ -12,6 +12,8 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.stream.Collectors;
 
+// 0/8
+
 @RestController
 @RequestMapping("/CourseSel")
 public class CourseSelectionController {

@@ -28,6 +28,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+// 0/6
 @RestController
 @RequestMapping("information")
 public class InformationController {
@@ -193,7 +194,7 @@ public class InformationController {
             response.put("status", "file_null");
             return response;
         }
-        String UPLOAD_DIR="E:/Temp/picture/";
+        String UPLOAD_DIR="E:/Temp/pictures/";
         String url=UPLOAD_DIR+file.getOriginalFilename();
         System.out.println(file.getName());
         System.out.println(url);

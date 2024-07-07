@@ -16,5 +16,7 @@ public class CourseCreate {
     public String institution; //开课学院
     public String identificationCode;  //四位标识码
     public String introduction; // 课程简介
-    public String time;//总学时
+    public Integer time;//总学时
+    public String classRoomNo; // 教室号（非必要）
+    public String status;
 }

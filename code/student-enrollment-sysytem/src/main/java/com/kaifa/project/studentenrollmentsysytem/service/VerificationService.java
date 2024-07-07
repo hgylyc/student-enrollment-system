@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 @Service
 public class VerificationService {
-    private Map<String, String> verificationCodes = new HashMap<>();
+    public Map<String, String> verificationCodes = new HashMap<>();
     public void saveVerificationCode(String email, String code) {
         verificationCodes.put(email, code);
     }
