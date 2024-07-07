@@ -216,17 +216,6 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     }
     public List<Map<String, Object>> getLowestEnrollmentRateCourses() {
         List<Course> courses = courseMapper.getAllCourses();
-
-
-    @Override
-    public List<Course> getCoursesExcludingStudentAcademy(String studentId) {
-        // 获取学生信息
-        Student student = studentMapper.selectById(studentId);
-        if (student == null) {
-            System.out.println("学生ID " + studentId + " 不存在");
-            return null;
-        }
-
         // 计算选课率并排序
         List<Map<String, Object>> sortedCourses = courses.stream()
                 .map(course -> {
@@ -244,7 +233,17 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
 
         return sortedCourses;
     }
-        String academy = student.getAcademy();
+
+
+    @Override
+    public List<Course> getCoursesExcludingStudentAcademy(String studentId) {
+        // 获取学生信息
+        Student student = studentMapper.selectById(studentId);
+        if (student == null) {
+            System.out.println("学生ID " + studentId + " 不存在");
+            return null;
+        }
+       String academy = student.getAcademy();
         System.out.println("学生ID: " + studentId + ", 学院: " + academy);
 
         // 使用QueryWrapper进行条件查询，排除学生所在学院的课程
