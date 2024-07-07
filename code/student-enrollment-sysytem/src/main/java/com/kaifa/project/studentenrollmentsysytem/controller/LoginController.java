@@ -15,7 +15,7 @@ import java.util.Map;
 //http:/localhost:8088/login
 @RestController
 @RequestMapping("login")
-@CrossOrigin(origins = "http://localhost:8086", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:8083", allowCredentials = "true")
 public class LoginController {
 
     @Autowired
@@ -30,15 +30,16 @@ public class LoginController {
                                      HttpServletResponse response,
                                      @RequestParam("username") String username,
                                      @RequestParam("password") String password) {
-        HttpSession session = request.getSession(true);
-        // 生成新会话ID
-        request.changeSessionId();
+        //获取一个session
+        HttpSession session = request.getSession();
         // 设置会话Cookie
-        response.addCookie(new Cookie("JSESSIONID", session.getId()));
+        Cookie sessionCookie = new Cookie("JSESSIONID", session.getId());
+        response.addCookie(sessionCookie);
+        sessionCookie.setPath("/");
 
-        System.out.println("work");
         Map<String, Object> responses = new HashMap<>();
         Account account= accountService.getById(username);
+        System.out.println("begin");
         if(account==null)
         {
             responses.put("status", "null");
@@ -67,6 +68,10 @@ public class LoginController {
             }
             session.setAttribute("username", username);
             session.setAttribute("role", account.identity);
+
+            System.out.println(session.getId());
+            System.out.println(session.getAttribute("username"));
+
             responses.put("status", "success");
             responses.put("username",username);
             responses.put("role",account.identity);

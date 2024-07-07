@@ -51,8 +51,19 @@ public class StudentManageController {
     @PostMapping("/findStudents/state")
     public Result UpdateState(@RequestParam("id") String id) {
         Student student = studentService.getStudentById(id);
+        if(student.getAcademy()!=null){
+            String a=student.getAcademy();
+            String b=Character.toString(Mapping.mapCollege(a));
+            student.setAcademy(b);
+        }
         // 查找学生的学院
         Institute institute = instituteService.getInstituteByName(student.getAcademy());
+        System.out.println("woaini");
+        System.out.println(student.getAcademy());
+        System.out.println(Mapping.reverseMapCollege(student.getAcademy().charAt(0)));
+        if(institute==null){
+            return Result.error("无学院",institute);
+        }
         if (!student.isState3()) {
             student.setState3(true);
             student.setTimeNode(LocalDateTime.now());
