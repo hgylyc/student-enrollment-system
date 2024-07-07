@@ -1,11 +1,16 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.InstituteService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
+
+import com.kaifa.project.studentenrollmentsysytem.common.PythonRunner;
+import com.kaifa.project.studentenrollmentsysytem.service.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +34,9 @@ public class AdministratorsController {
     private DormitoryService dormitoryService;
     @Autowired
     private InstituteService instituteService;
-
+    @Autowired
+    private CourseService courseService;
+    @CrossOrigin(origins = "http://localhost:9529")
     @GetMapping("/data")
     public Map<String, Object> data() {
 
@@ -44,7 +51,7 @@ public class AdministratorsController {
         List<Map<String, Object>> NativeSpace = studentService.getNativeSpace();
         response.put("NativeSpace",NativeSpace);
         //总报道人数
-        Integer totalNumOfArrivedStu = instituteService.getTotalNumOfArrivedStu();
+        List<Map<String, Object>>  totalNumOfArrivedStu = instituteService.getTotalNumOfArrivedStu();
         response.put("totalNumOfArrivedStu", totalNumOfArrivedStu);
         //学院报道情况分布
         List<Map<String, Object>> studentByInstitute = instituteService.getStudentByInstitute();
@@ -58,6 +65,22 @@ public class AdministratorsController {
         //入住情况园区分布
         List<Map<String, Object>> studentCountByArea = dormitoryService.getStudentCountByArea();
         response.put("studentCountByArea", studentCountByArea);
+        //报道率最低的三个学院
+        List<Map<String, Object>> lowestArrivalRateInstitutes = instituteService.getInstitutesWithLowestArrivalRate();
+        response.put("lowestArrivalRateInstitutes", lowestArrivalRateInstitutes);
+
+        // 获取选课率最低的10个课程
+        List<Map<String, Object>> lowestEnrollmentRateCourses = courseService.getLowestEnrollmentRateCourses();
+        response.put("lowestEnrollmentRateCourses", lowestEnrollmentRateCourses);
+        //
+        List<Map<String, Integer>> getDailyReportCount=studentService.getDailyReportCount();
+        response.put("DailyReportCount",getDailyReportCount);
+
+        Map<String, Integer> getTodayReportCount=studentService.getTodayReportCount();
+        response.put("TodayCount",getTodayReportCount);
+        //返回预测的人数
+        List<Map<String, Object>> dailyReportCount = PythonRunner.runPythonScript();
+        response.put("PredictCount", dailyReportCount);
         return response;
     }
 

@@ -7,6 +7,8 @@ import com.kaifa.project.studentenrollmentsysytem.service.CourseTimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CourseTimeServiceImpl extends ServiceImpl<CourseTimeMapper, CourseTime> implements CourseTimeService {
 
@@ -17,4 +19,6 @@ public class CourseTimeServiceImpl extends ServiceImpl<CourseTimeMapper, CourseT
     public CourseTime getCourseTimeByCourseId(String courseId) {
         return courseTimeMapper.selectById(courseId);
     }
+
+
 }

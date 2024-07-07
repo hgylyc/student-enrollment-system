@@ -20,10 +20,12 @@ public class TeacherInfoManagementController {
     @GetMapping
     public Object getAllTeachersForAdm() {
         // 判断角色是否为老师
-        Object role = session.getAttribute("role");
+        /*Object role = session.getAttribute("role");*/
+        Object role = "teacher";
         if (role == null || !role.equals("teacher")) {
             return "Unauthorized"; // 或者根据需求返回其他信息或处理方式
         }
+        System.out.println("管理端初始化成功");
         return teacherService.getAllTeachers();
     }
     @Autowired
@@ -34,13 +36,13 @@ public class TeacherInfoManagementController {
         return teacherService.getAllTeachers();
     }*/
     //管理端查询教师信息
-    @GetMapping("/Asearch")
+/*    @GetMapping("/Asearch")
     public Teacher getTeacherByNameForAdm(@RequestParam String teacherName) {
         return teacherService.getTeacherByName(teacherName);
-    }
+    }*/
     // 获取教师详细信息，包括照片
-    @GetMapping("/teacherDetails/{teacherId}")
-    public TeacherDetailsDTO getTeacherDetails(@PathVariable String teacherId, HttpSession session) {
+    @PostMapping("/teacherDetails")
+    public TeacherDetailsDTO getTeacherDetails(@RequestParam String teacherId/*, HttpSession session*/) {
         Teacher teacher = teacherService.getById(teacherId);
         TeacherDetailsDTO teacherDetailsDTO = new TeacherDetailsDTO();
         teacherDetailsDTO.setTitle(teacher.getTitle());
@@ -49,6 +51,16 @@ public class TeacherInfoManagementController {
         teacherDetailsDTO.setTacademy(teacher.getTacademy());
         teacherDetailsDTO.setIntroduction(teacher.getIntroduction());
         teacherDetailsDTO.setFigureUrl(teacher.getFigureUrl()); // 设置教师照片URL
+        teacherDetailsDTO.setTeacherId(teacher.getTeacherId());
+
+        // 指定图片文件路径
+        /*Path imagePath = Paths.get(url);
+        // 读取图片文件为字节数组
+        byte[] imageBytes = Files.readAllBytes(imagePath);*/
+
+//        teacherDetailsDTO.setImageBytes(imageBytes);
+
+        System.out.println("管理端详细信息成功"+teacherId);
         return teacherDetailsDTO;
     }
 
@@ -59,7 +71,8 @@ public class TeacherInfoManagementController {
                                     @RequestParam(value = "title", required = false) String title,
                                     @RequestParam(value = "temail", required = false) String temail,
                                     @RequestParam(value = "introduction", required = false) String introduction,
-                                    @RequestParam(value = "figureUrl", required = false) String figureUrl) {
+                                    @RequestParam(value = "figureUrl", required = false) String figureUrl,
+                                    @RequestParam(value = "teacherName", required = false) String teacherName) {
         Teacher existingTeacher = teacherService.getById(teacherId);
         if (existingTeacher != null) {
             if (tacademy != null) existingTeacher.setTacademy(tacademy);
@@ -67,6 +80,7 @@ public class TeacherInfoManagementController {
             if (temail != null) existingTeacher.setTemail(temail);
             if (introduction != null) existingTeacher.setIntroduction(introduction);
             if (figureUrl != null) existingTeacher.setFigureUrl(figureUrl);
+            if(teacherName!=null) existingTeacher.setTeacherName(teacherName);
 
             boolean res = teacherService.updateTeacher(existingTeacher);
             return res ? "Teacher updated successfully" : "Failed to update teacher";
@@ -74,9 +88,14 @@ public class TeacherInfoManagementController {
             return "Teacher not found";
         }
     }
-    //删除教师信息
-    @DeleteMapping("/Delteacher/{teacherId}")
-    public String deleteTeacher(@PathVariable("teacherId") String teacherId) {
+    @PostMapping("/Delteacher")
+    public String deleteTeacher(@RequestParam String teacherId) {
+        // 校验 teacherId 是否为空
+        if (teacherId == null || teacherId.isEmpty()) {
+            return "Teacher ID is required";
+        }
+
+        // 删除教师信息
         boolean res = teacherService.deleteTeacherById(teacherId);
         return res ? "Teacher deleted successfully" : "Failed to delete teacher";
     }
@@ -102,10 +121,10 @@ public class TeacherInfoManagementController {
     @PostMapping("/Addteacher")
     public String addTeacher(@RequestParam("teacherId") String teacherId,
                              @RequestParam("teacherName") String teacherName,
-                             @RequestParam("introduction") String introduction,
-                             @RequestParam("figureUrl") String figureUrl,
+                             @RequestParam(value ="introduction", required = false) String introduction,
+                             @RequestParam(value ="figureUrl",required = false) String figureUrl,
                              @RequestParam("title") String title,
-                             @RequestParam("temail") String temail,
+                             @RequestParam(value = "temail",required = false) String temail,
                              @RequestParam("tacademy") String tacademy
                              ) {
         Teacher t = new Teacher();
@@ -121,8 +140,31 @@ public class TeacherInfoManagementController {
     }
     //检索
     @PostMapping("/filterTeachers")
-    public List<TeacherDTO> findTeachers(@RequestBody TeacherDTO teacherDTO) {
+    public List<TeacherDTO> findTeachers(
+            @RequestParam(required = false) String teacherId,
+            @RequestParam(required = false) String teacherName,
+            @RequestParam(required = false) String tacademy,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String introduction,
+            @RequestParam(required = false) String figureUrl,
+            @RequestParam(required = false) String temail,
+            @RequestParam(required = false) String institution) {
+        // 如果 teacherName 不为空，则进行模糊查询处理
+        if (teacherName != null && !teacherName.isEmpty()) {
+            teacherName = "%" + teacherName + "%";
+        }
+
+        TeacherDTO teacherDTO = new TeacherDTO();
+        teacherDTO.setTeacherId(teacherId);
+        teacherDTO.setTeacherName(teacherName);
+        teacherDTO.setTacademy(tacademy);
+        teacherDTO.setTitle(title);
+        teacherDTO.setIntroduction(introduction);
+        teacherDTO.setFigureUrl(figureUrl);
+        teacherDTO.setTemail(temail);
+
         List<Teacher> list = teacherService.findTeachers(teacherDTO);
         return list.stream().map(TeacherDTO::new).collect(Collectors.toList());
     }
+
 }

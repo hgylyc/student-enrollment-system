@@ -18,13 +18,19 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
     @Override
     public Teacher getTeacherByName(String teacherName) {
-        return baseMapper.selectOne(new QueryWrapper<Teacher>().eq("teacher_name", teacherName));
+        Teacher teacher = baseMapper.selectOne(new QueryWrapper<Teacher>().eq("teacher_name", teacherName));
+        System.out.println("查询教师成功");
+        return teacher;
     }
+
 
     @Override
     public List<Teacher> getAllTeachers() {
-        return baseMapper.selectList(null);
+        List<Teacher> teachers = baseMapper.selectList(null);
+        System.out.println("初始化成功");
+        return teachers;
     }
+
 
     @Override
     public boolean addTeacher(Teacher teacher) {
@@ -35,7 +41,7 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public boolean updateTeacher(Teacher teacher) {
         return baseMapper.updateById(teacher) > 0;
     }
-    @Override
+    /*@Override
     public boolean deleteTeacherById(String teacherId) {
         try {
             int result = teacherMapper.deleteById(teacherId);
@@ -50,10 +56,16 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
             System.err.println("Exception occurred while deleting teacher: " + e.getMessage());
             return false;
         }
+    }*/
+
+    @Override
+    public boolean deleteTeacherById(String teacherId) {
+        int result = teacherMapper.deleteById(teacherId);
+        return result > 0;
     }
 
     @Override
     public List<Teacher> findTeachers(TeacherDTO filter) {
-        return baseMapper.selectTeachers(filter);
+        return teacherMapper.selectTeachers(filter);
     }
 }

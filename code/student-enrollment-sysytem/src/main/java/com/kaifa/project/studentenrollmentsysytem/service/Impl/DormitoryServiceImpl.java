@@ -5,14 +5,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.mapper.DormitoryMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
+import com.kaifa.project.studentenrollmentsysytem.pojo.DormitoryDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DormitoryServiceImpl extends ServiceImpl<DormitoryMapper, Dormitory> implements DormitoryService{
@@ -53,6 +56,15 @@ public class DormitoryServiceImpl extends ServiceImpl<DormitoryMapper, Dormitory
 
         return dormitory;
     }
-
+    @Override
+    public List<DormitoryDTO> getDormitories(String areaNo, String dormNo, String roomNo, Integer isFull, String academy, String gender) {
+        List<Dormitory> dormitories = dormitoryMapper.selectDormitories(areaNo, dormNo, roomNo, isFull, academy, gender);
+        return dormitories.stream()
+                .map(studentService::convertToDTO)  // 使用 StudentService 的 convertToDTO 方法
+                .collect(Collectors.toList());
+    }
+    public List<Map<String, Object>> myDormitory(String stuId){
+        return dormitoryMapper.myDormitory(stuId);
+    };
 }
 

@@ -31,7 +31,6 @@ public class CourseManagementController {
 
     @Autowired
     private CourseTimeService courseTimeService;
-
     @GetMapping   //实现初始化   //over
     public List<CourseInitialDTO> initialClasses(){
         System.out.println("work");

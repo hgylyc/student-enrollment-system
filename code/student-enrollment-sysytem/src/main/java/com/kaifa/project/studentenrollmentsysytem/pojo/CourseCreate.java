@@ -17,6 +17,16 @@ public class CourseCreate {
     public String identificationCode;  //四位标识码
     public String introduction; // 课程简介
     public Integer time;//总学时
+
     public String classRoomNo; // 教室号（非必要）
     public String status;
+
+    public String getClassRoomNo() {
+        return classRoomNo;
+    }
+
+    public void setClassRoomNo(String classRoomNo) {
+        this.classRoomNo = classRoomNo;
+    }
+
 }

@@ -5,10 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 @Data
-@TableName("insitute")
+@TableName("institute")
 
 public class Institute {
-    @TableField("institute_name")
+    @TableId("institute_name")
     private String institutename;
     @TableField("num_of_teacher")
     private Integer numofteacher;

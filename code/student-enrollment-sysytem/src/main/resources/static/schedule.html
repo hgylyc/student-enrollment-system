@@ -19,9 +19,24 @@
       overflow: hidden; /* 如果内容超出单元格大小，则隐藏溢出内容 */
       white-space: pre-wrap; /* 根据需要保留空格并换行显示 */
       text-overflow: ellipsis; /* 如果内容过长，显示省略号 */
+      position: relative;
     }
     th {
       background-color: #f2f2f2;
+    }
+    .highlight {
+      border-bottom: 2px solid yellow; /* 添加底部黄色网格线 */
+      box-sizing: border-box; /* 包括内边距和边框的宽度 */
+    }
+    .highlight::after {
+      content: "";
+      display: block;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: yellow;
     }
   </style>
 </head>
@@ -90,6 +105,16 @@
     <td id="6-5"></td>
     <td id="7-5"></td>
   </tr>
+  <tr>
+    <th>第六节</th>
+    <td id="1-6"></td>
+    <td id="2-6"></td>
+    <td id="3-6"></td>
+    <td id="4-6"></td>
+    <td id="5-6"></td>
+    <td id="6-6"></td>
+    <td id="7-6"></td>
+  </tr>
 </table>
 
 <script>
@@ -98,13 +123,19 @@
           .then(response => response.json())
           .then(data => {
             // 将数据填充到表格中
-            for (var i = 0; i < 5; i++) {
+            for (var i = 0; i < 6; i++) {
               for (var j = 0; j < 7; j++) {
                 var cellId = (i + 1) + "-" + (j + 1);
                 var cell = document.getElementById(cellId);
                 if (cell) {
                   // 注意调整填充数据的位置
-                  cell.innerHTML = data[j][i] ? data[j][i] : "";
+                  if (data[j][i]) {
+                    cell.innerHTML = data[j][i];
+                    cell.classList.add('highlight'); // 添加高亮类
+                  } else {
+                    cell.innerHTML = "";
+                    cell.classList.remove('highlight'); // 移除高亮类
+                  }
                 }
               }
             }

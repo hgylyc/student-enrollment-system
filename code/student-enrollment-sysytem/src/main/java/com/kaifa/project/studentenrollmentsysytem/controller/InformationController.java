@@ -8,10 +8,19 @@ import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import javax.imageio.ImageIO;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.HashMap;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -27,6 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 // 0/6
 @RestController
@@ -40,6 +50,73 @@ public class InformationController {
     @Autowired
     private TeacherService teacherService;
 
+    private static final String CAPTCHA_SESSION_KEY = "random";
+
+    @GetMapping("/captcha")
+    public void generateCaptcha(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String sRand = createRandomString(4);
+        HttpSession session = request.getSession();
+        session.setAttribute(CAPTCHA_SESSION_KEY, sRand);
+
+        response.setContentType("image/jpeg");
+        setNoCacheHeaders(response);
+        ServletOutputStream outputStream = response.getOutputStream();
+        generateCaptchaImage(sRand, outputStream);
+    }
+
+    private String createRandomString(int length) {
+        Random random = new Random();
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            result.append(random.nextInt(10));
+        }
+        return result.toString();
+    }
+
+    private void generateCaptchaImage(String captchaString, OutputStream outputStream) throws IOException {
+        int width = 60, height = 20;
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = image.getGraphics();
+
+        graphics.setColor(getRandomColor(200, 250));
+        graphics.fillRect(0, 0, width, height);
+        graphics.setFont(new Font("Times New Roman", Font.PLAIN, 18));
+        graphics.setColor(getRandomColor(160, 200));
+
+        Random random = new Random();
+        for (int i = 0; i < 155; i++) {
+            int x = random.nextInt(width);
+            int y = random.nextInt(height);
+            int xl = random.nextInt(12);
+            int yl = random.nextInt(12);
+            graphics.drawLine(x, y, x + xl, y + yl);
+        }
+
+        for (int i = 0; i < captchaString.length(); i++) {
+            String rand = captchaString.substring(i, i + 1);
+            graphics.setColor(new Color(20 + random.nextInt(110), 20 + random.nextInt(110), 20 + random.nextInt(110)));
+            graphics.drawString(rand, 13 * i + 6, 16);
+        }
+
+        graphics.dispose();
+        ImageIO.write(image, "JPEG", outputStream);
+    }
+
+    private Color getRandomColor(int lowerBound, int upperBound) {
+        Random random = new Random();
+        if (lowerBound > 255) lowerBound = 255;
+        if (upperBound > 255) upperBound = 255;
+        int r = lowerBound + random.nextInt(upperBound - lowerBound);
+        int g = lowerBound + random.nextInt(upperBound - lowerBound);
+        int b = lowerBound + random.nextInt(upperBound - lowerBound);
+        return new Color(r, g, b);
+    }
+
+    private void setNoCacheHeaders(HttpServletResponse response) {
+        response.setHeader("Pragma", "No-cache");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setDateHeader("Expires", 0);
+    }
     //学生的宿舍信息显示页面，负责显示可供学生选择的宿舍信息
     @PostMapping("dormitories")
     public Result dormitoriesList(HttpSession session, Model model) {
@@ -49,6 +126,9 @@ public class InformationController {
             return Result.error("用户id不存在，请重新登录", null);
         }
         Student student = studentService.getStudentById(studentId);
+        if(!(student.getAreaNo()==null)){
+            return Result.error("学生已存在宿舍", null);
+        }
         // 获取该专业和性别对应的所有宿舍
         String academy = student.getAcademy();
         String gender = student.getGender();
@@ -57,27 +137,44 @@ public class InformationController {
         return Result.success("成功", dormitoryDTOList);
     }
     //学生申请宿舍
-    @PostMapping("apply/{areano}/{dormno}/{roomno}")
-    public Result applyForDormitory(@PathVariable String areano, @PathVariable String dormno, @PathVariable String roomno, HttpSession session) {
+    @PostMapping("apply")
+    public Result applyForDormitory(@RequestParam("areaNo") String areaNo,
+                                    @RequestParam("dormNo") String dormNo,
+                                    @RequestParam("roomNo") String roomNo,
+                                    HttpSession session) {
         String studentId = (String) session.getAttribute("username");
         if (studentId == null) {
             return Result.error("用户未登录", null);
         }
         Student student = studentService.getStudentById(studentId);
-        if(!(student.getDormNo() == null || student.getDormNo().isEmpty())){
-            return Result.error("学生已有宿舍",student.getDormNo());
+        if (!(student.getDormNo() == null) && !student.getDormNo().isEmpty()) {
+            return Result.error("学生已有宿舍", student.getDormNo());
         }
-        Dormitory dormitory = dormitoryService.applyForDormitory(studentId, areano, dormno, roomno);
+        Dormitory dormitory = dormitoryService.applyForDormitory(studentId, areaNo, dormNo, roomNo);
         if (dormitory == null) {
             return Result.error("宿舍申请失败", null);
         }
         student.setState2(true);
+        studentService.updateStudent(student); // 更新学生信息
         return Result.success("宿舍申请成功", dormitory);
     }
+
+    // 查看舍友
+    @PostMapping("search")
+    public Result findStudentsByDormitory(@RequestParam("areaNo") String areaNo,
+                                          @RequestParam("dormNo") String dormNo,
+                                          @RequestParam("roomNo") String roomNo) {
+        List<Map<String, Object>> students = studentService.findStudentsByDormitory(areaNo, dormNo, roomNo);
+        if (students.isEmpty()) {
+            return Result.error("未找到匹配的学生信息", null);
+        }
+        return Result.success("查询成功", students);
+    }
+
+
 //学生的信息录入页面，负责录入除照片之外的信息
     @PostMapping("/updateStudent")
     public Result updateStudent(
-            @RequestParam(value = "studentId", required = false) String studentId,
             @RequestParam(value = "studentName", required = false) String studentName,
             @RequestParam(value = "gender", required = false) String gender,
             @RequestParam(value = "nativeSpace", required = false) String nativeSpace,
@@ -92,10 +189,10 @@ public class InformationController {
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(value = "major", required = false) String major,
+            @RequestParam(value = "captcha", required = false) String captcha,
             HttpSession session
     ) {
         // Check if any parameter is missing
-        if (studentId == null) return Result.error("缺少必填参数: studentId", null);
         if (studentName == null) return Result.error("缺少必填参数: studentName", null);
         if (gender == null) return Result.error("缺少必填参数: gender", null);
         if (nativeSpace == null) return Result.error("缺少必填参数: nativeSpace", null);
@@ -110,13 +207,14 @@ public class InformationController {
         if (email == null) return Result.error("缺少必填参数: email", null);
         if (phoneNumber == null) return Result.error("缺少必填参数: phoneNumber", null);
         if (academy == null) return Result.error("缺少必填参数: academy", null);
-
+        if (captcha == null) return Result.error("缺少必填参数: captcha", null);
+        String sessionCaptcha = (String) session.getAttribute("random");
+        if(!captcha.equals(sessionCaptcha)){
+            return Result.error("验证码不正确",null);
+        }
         Mapping mapping=new Mapping();
         String studentid = (String) session.getAttribute("username");
         Student student = studentService.getStudentById(studentid);
-        if(!(studentId.equals(studentid)))
-            return Result.error("学号不匹配", null);
-        student.setStudentId(studentId);
         student.setStudentName(studentName);
         student.setGender(gender);
         student.setNativeSpace(nativeSpace);
@@ -136,11 +234,12 @@ public class InformationController {
 
         boolean updateResult = studentService.updateStudentInfo(student);
         if (updateResult) {
-            return Result.success("更新成功", student);
+            return Result.success("sucess", student);
         } else {
             return Result.error("更新失败", null);
         }
     }
+
     //学生申请校园卡
     @PostMapping("/applyCampusCard")
     public Result applyCampusCard(
@@ -149,21 +248,17 @@ public class InformationController {
             @RequestParam(value = "idNumber", required = false) String idNumber,
             @RequestParam(value = "schoolCardPassword", required = false) String schoolCardPassword,
             @RequestParam(value = "confirmSchoolCardPassword", required = false) String confirmSchoolCardPassword,
-            //@RequestParam(value = "captcha", required = false) String captcha,
+            @RequestParam(value = "captcha", required = false) String captcha,
             HttpSession session
     ) {
         // 检查所有必要的信息是否已经提供
         if (studentName == null || studentId == null || idNumber == null || schoolCardPassword == null || confirmSchoolCardPassword == null ) {
             return Result.error("请完成所有信息", null);
         }
-
-        // 从session中获取验证码
-        //String sessionCaptcha = (String) session.getAttribute("captcha");
-
-        // 检查验证码
-        //if (sessionCaptcha == null || !sessionCaptcha.equals(captcha)) {
-          //  return Result.error("验证码错误，请重新输入", null);
-       // }
+        String sessionCaptcha = (String) session.getAttribute("random");
+        if (captcha == null || !captcha.equals(sessionCaptcha)) {
+            return Result.error("验证码错误，请重新输入", null);
+        }
 
         // 检查两次输入的校园卡密码是否一致
         if (!schoolCardPassword.equals(confirmSchoolCardPassword)) {
@@ -195,6 +290,7 @@ public class InformationController {
             return response;
         }
         String UPLOAD_DIR="E:/Temp/pictures/";
+
         String url=UPLOAD_DIR+file.getOriginalFilename();
         System.out.println(file.getName());
         System.out.println(url);

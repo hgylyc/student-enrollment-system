@@ -4,8 +4,6 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.Student_course;
 import com.kaifa.project.studentenrollmentsysytem.pojo.CourseTime;
 import com.kaifa.project.studentenrollmentsysytem.service.Student_courseService;
 import com.kaifa.project.studentenrollmentsysytem.service.CourseTimeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,13 +20,14 @@ public class ScheduleController {
     private Student_courseService studentCourseService;
     @Autowired
     private CourseTimeService courseTimeService;
+
     @GetMapping
-    public ResponseEntity<String[][]> generateSchedule(HttpSession session) {
+    public ResponseEntity<String[][]> generateSchedule(/*HttpSession session*/) {
         // 获取当前登录学生的 StudentId
         // String studentId = (String) session.getAttribute("username");
         String studentId = "20221443";
-        // 初始化一个5*7的课程表数组
-        String[][] schedule = new String[5][7];
+        // 初始化一个6*7的课程表数组
+        String[][] schedule = new String[6][7];
         // 查询该学生已选择的课程
         List<Student_course> selectedCourses = studentCourseService.getStudentSchedule(studentId);
         // 填充课程表
@@ -45,12 +44,13 @@ public class ScheduleController {
                     // 将课程号、课程名称、上课教室合并为一个字符串，并使用<br>标签换行
                     String courseInfo = courseTime.getCourseId() + "<br>" + courseTime.getCourseName() + "<br>" + courseTime.getClassroom();
                     // 填充课程表
-                    if (sessionIndex >= 0 && sessionIndex < 5 && dayOfWeek >= 1 && dayOfWeek <= 7) {
+                    if (sessionIndex >= 0 && sessionIndex < 6 && dayOfWeek >= 1 && dayOfWeek <= 7) {
                         schedule[sessionIndex][dayOfWeek - 1] = courseInfo; // 数组索引从0开始，减1
                     }
                 }
             }
         }
+        System.out.println("课表生成成功");
         return ResponseEntity.ok().body(schedule);
     }
 }

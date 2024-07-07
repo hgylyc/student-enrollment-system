@@ -1,0 +1,23 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+}
+
+.captcha-container {
+    text-align: center;
+}
+
+#captchaImage {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+
+#refreshCaptcha {
+    padding: 5px 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
