@@ -3,6 +3,7 @@ package com.kaifa.project.studentenrollmentsysytem.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Institute;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -15,6 +16,6 @@ public interface InstituteMapper extends BaseMapper<Institute> {
     @Select("SELECT institute_name,num_of_student ,num_of_arrived_stu  FROM institute")
     List<Map<String, Object>> getStudentByInstitute();
     @Select("SELECT * FROM institute WHERE institute_name = #{instituteName}")
-    Institute selectByName(String instituteName);
+    Institute selectByName(@Param("instituteName")String instituteName);
 
 }

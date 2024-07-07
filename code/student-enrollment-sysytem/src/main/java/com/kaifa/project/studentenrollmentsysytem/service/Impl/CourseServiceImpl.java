@@ -228,7 +228,7 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
                     return map;
                 })
                 .sorted((c1, c2) -> Double.compare((double) c1.get("enrollmentRate"), (double) c2.get("enrollmentRate")))
-                .limit(10)
+                .limit(5)
                 .collect(Collectors.toList());
 
         return sortedCourses;
