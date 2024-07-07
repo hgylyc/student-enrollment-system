@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Teacher Details</title>
+</head>
+<body>
+<h1>Teacher Details</h1>
+<form id="detailsForm">
+  <label for="teacherId">Teacher ID:</label>
+  <input type="text" id="teacherId" name="teacherId" required><br><br>
+  <button type="button" onclick="getTeacherDetails()">Get Details</button>
+</form>
+
+<h2>Details:</h2>
+<div id="details">
+  <!-- Details will be displayed here -->
+</div>
+
+<script>
+  function getTeacherDetails() {
+    var teacherId = document.getElementById('teacherId').value;
+    if (!teacherId) {
+      alert('Please enter a Teacher ID');
+      return;
+    }
+
+    fetch('http://localhost:8080/AdmInfo/teacherDetails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        'teacherId': teacherId
+      })
+    })
+            .then(response => response.json())
+            .then(data => {
+              displayDetails(data);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Error: ' + error);
+            });
+  }
+
+  function displayDetails(data) {
+    var detailsDiv = document.getElementById('details');
+    detailsDiv.innerHTML = `
+                <p><strong>ID:</strong> ${data.teacherId}</p>
+                <p><strong>Name:</strong> ${data.teacherName}</p>
+                <p><strong>Title:</strong> ${data.title}</p>
+                <p><strong>Academy:</strong> ${data.tacademy}</p>
+                <p><strong>Email:</strong> ${data.temail}</p>
+                <p><strong>Introduction:</strong> ${data.introduction}</p>
+                <p><strong>Figure URL:</strong> <a href="${data.figureUrl}" target="_blank">${data.figureUrl}</a></p>
+                <img src="${data.figureUrl}" alt="Teacher Photo" style="max-width: 200px; max-height: 200px;">
+            `;
+  }
+</script>
+</body>
+</html>
