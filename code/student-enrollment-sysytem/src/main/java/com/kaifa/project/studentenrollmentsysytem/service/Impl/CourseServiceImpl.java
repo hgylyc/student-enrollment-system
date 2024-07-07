@@ -234,6 +234,10 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         return sortedCourses;
     }
 
+    @Override
+    public void updateTeacherNameInCourses(String teacherId, String newTeacherName) {
+        courseMapper.updateTeacherNameInCourses(teacherId, newTeacherName);
+    }
 
     @Override
     public List<Course> getCoursesExcludingStudentAcademy(String studentId) {

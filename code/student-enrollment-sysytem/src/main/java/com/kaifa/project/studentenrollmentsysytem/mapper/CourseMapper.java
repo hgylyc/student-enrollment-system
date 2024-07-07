@@ -20,6 +20,8 @@ public interface CourseMapper extends BaseMapper<Course> {
     @Select("SELECT * FROM course WHERE academy = #{studentId}")
     List<Course> getCoursesByStudentAcademy(String studentId);
 
+    void updateTeacherNameInCourses(String teacherId, String newTeacherName);
+
     class CourseSqlBuilder {
         public static String buildSelectCourses(@Param("filter") final CourseDTO filter) {
             String sql = new SQL() {{

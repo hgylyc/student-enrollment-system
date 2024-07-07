@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Teacher</title>
+</head>
+<body>
+<h1>Add Teacher</h1>
+<form id="teacherForm" action="http://localhost:8080/AdmInfo/Addteacher" method="post" enctype="multipart/form-data">
+  <label for="teacherId">Teacher ID:</label>
+  <input type="text" id="teacherId" name="teacherId" required><br><br>
+
+  <label for="teacherName">Teacher Name:</label>
+  <input type="text" id="teacherName" name="teacherName" required><br><br>
+
+  <label for="title">Title:</label>
+  <input type="text" id="title" name="title" required><br><br>
+
+  <label for="tacademy">Academy:</label>
+  <input type="text" id="tacademy" name="tacademy" required><br><br>
+
+  <label for="temail">Email:</label>
+  <input type="email" id="temail" name="temail"><br><br>
+
+  <label for="introduction">Introduction:</label>
+  <textarea id="introduction" name="introduction"></textarea><br><br>
+
+  <label for="figureUrl">Figure URL:</label>
+  <input type="text" id="figureUrl" name="figureUrl"><br><br>
+
+  <label for="file">Upload Photo:</label>
+  <input type="file" id="file" name="file"><br><br>
+
+  <button type="submit">Add Teacher</button>
+</form>
+
+<script>
+  document.getElementById('teacherForm').onsubmit = function (event) {
+    event.preventDefault();
+
+    var formData = new FormData(document.getElementById('teacherForm'));
+
+    fetch('http://localhost:8080/AdmInfo/Addteacher', {
+      method: 'POST',
+      body: formData
+    })
+            .then(response => response.text())
+            .then(data => {
+              alert(data);
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Error: ' + error);
+            });
+  };
+</script>
+</body>
+</html>

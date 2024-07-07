@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 public interface TeacherService extends IService<Teacher> {
     Teacher getTeacherByName(String teacherName);
+    Teacher getTacherById(String teacherId);
     List<Teacher> getAllTeachers();
     boolean addTeacher(Teacher teacher);
     boolean updateTeacher(Teacher teacher);

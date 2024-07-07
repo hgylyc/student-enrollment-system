@@ -23,6 +23,13 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         return teacher;
     }
 
+    @Override
+    public Teacher getTacherById(String teacherId) {
+        Teacher teacher = baseMapper.selectOne(new QueryWrapper<Teacher>().eq("teacher_id", teacherId));
+        System.out.println("查询教师成功");
+        return teacher;
+    }
+
 
     @Override
     public List<Teacher> getAllTeachers() {
@@ -34,7 +41,14 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
 
     @Override
     public boolean addTeacher(Teacher teacher) {
-        return baseMapper.insert(teacher) > 0;
+        // 检查是否存在相同的 teacher_id
+        Teacher existingTeacher = teacherMapper.selectById(teacher.getTeacherId());
+        if (existingTeacher != null) {
+            // 如果存在相同的 teacher_id，返回 false 表示添加失败
+            return false;
+        }
+        teacherMapper.insert(teacher);
+        return true;
     }
 
     @Override
