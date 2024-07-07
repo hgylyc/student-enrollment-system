@@ -1,5 +1,6 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
+import com.kaifa.project.studentenrollmentsysytem.common.PythonRunner;
 import com.kaifa.project.studentenrollmentsysytem.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -68,7 +69,9 @@ public class AdministratorsController {
 
         Map<String, Integer> getTodayReportCount=studentService.getTodayReportCount();
         response.put("TodayCount",getTodayReportCount);
-
+        //返回预测的人数
+        List<Map<String, Object>> dailyReportCount = PythonRunner.runPythonScript();
+        response.put("PredictCount", dailyReportCount);
         return response;
     }
 }

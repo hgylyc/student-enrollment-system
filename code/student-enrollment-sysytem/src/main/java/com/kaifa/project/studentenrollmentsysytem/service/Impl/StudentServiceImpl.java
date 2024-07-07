@@ -1,5 +1,6 @@
 package com.kaifa.project.studentenrollmentsysytem.service.Impl;
 
+import ch.qos.logback.core.joran.spi.ElementSelector;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -30,7 +31,12 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     private StudentMapper studentMapper;
     @Override
     public Student getStudentById(String studentId) {
-        return getById(studentId);
+
+        Student student= getById(studentId);
+        String a=student.getAcademy();
+        char b=a.charAt(0);
+        student.setAcademy(Mapping.reverseMapCollege(b));
+        return student;
     }
     public DormitoryDTO convertToDTO(Dormitory dormitory) {
         DormitoryDTO dto = new DormitoryDTO();
@@ -89,6 +95,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     @Override
     public List<studentManageDTO> findStudents(String studentId, String studentName, String academy) {
         List<Student> students = studentMapper.selectStudents(studentId, studentName, academy);
+
         return students.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -96,7 +103,11 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         studentManageDTO dto = new studentManageDTO();
         dto.setStudentId(student.getStudentId());
         dto.setStudentName(student.getStudentName());
-        dto.setAcademy(student.getAcademy());
+        if (student.getAcademy() == null) {
+            dto.setAcademy(student.getAcademy());}
+        else{
+            dto.setAcademy(Mapping.reverseMapCollege((student.getAcademy()).charAt(0)));
+        }
         dto.setState1(student.isState1());
         dto.setState2(student.isState2());
         dto.setState3(student.isState3());
