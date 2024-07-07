@@ -31,6 +31,8 @@ public interface CourseService extends IService <Course>{
 
     CourseDTO getCourseDetails(String courseId);
 
+    Map<String, Object> getCourseStatistics();
+
     Course getCourseById(String courseId);
 
 

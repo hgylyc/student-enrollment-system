@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.jdbc.SQL;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface CourseMapper extends BaseMapper<Course> {
@@ -64,4 +65,14 @@ public interface CourseMapper extends BaseMapper<Course> {
     }
     @Select("SELECT * FROM course")
     List<Course> getAllCourses();
+
+
+    @Select("SELECT " +
+            "COUNT(*) AS totalCourses, " +
+            "SUM(CASE WHEN status = '已开始' THEN 1 ELSE 0 END) AS ongoingCourses, " +
+            "SUM(CASE WHEN status = '已结束' THEN 1 ELSE 0 END) AS finishedCourses, " +
+            "SUM(CASE WHEN status = '未开始' THEN 1 ELSE 0 END) AS notStartedCourses, " +
+            "SUM(CASE WHEN ceiling_of_personnel = current_num_of_stu THEN 1 ELSE 0 END) AS fullCourses " +
+            "FROM course")
+    Map<String, Object> getCourseStatistics();
 }

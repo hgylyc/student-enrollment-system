@@ -263,4 +263,9 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
         return courses;
     }
 
+    @Override
+    public Map<String, Object> getCourseStatistics() {
+        return courseMapper.getCourseStatistics();
+    }
+
 }

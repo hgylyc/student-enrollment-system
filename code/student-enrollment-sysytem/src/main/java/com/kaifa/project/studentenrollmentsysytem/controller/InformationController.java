@@ -1,4 +1,8 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.CannedAccessControlList;
+import com.aliyun.oss.model.PutObjectRequest;
 import com.kaifa.project.studentenrollmentsysytem.common.Result;
 import com.kaifa.project.studentenrollmentsysytem.pojo.*;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
@@ -6,6 +10,7 @@ import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -281,36 +287,54 @@ public class InformationController {
             return Result.error("更新失败", null);
         }
     }
-    @PostMapping("upload")
-    public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile file){
-        String username = (String) session.getAttribute("username");
-        Map<String, Object> response= new HashMap<>();;
-        if (file.isEmpty()) {
-            response.put("status", "file_null");
-            return response;
-        }
-        String UPLOAD_DIR="E:/Temp/pictures/";
 
-        String url=UPLOAD_DIR+file.getOriginalFilename();
-        System.out.println(file.getName());
-        System.out.println(url);
-        try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
-            // 创建目标文件
-            File dest = new File(UPLOAD_DIR, fileName);
-            // 保存文件到目标位置
-            file.transferTo(dest);
-            Student student = studentService.getStudentById(username);
-            student.setFigureUrl(url);
-            studentService.updateById(student);
-            response.put("status", "success");
-            return response;
-        } catch (IOException e) {
-            e.printStackTrace();
-            response.put("status", "fail:"+e.getMessage());
-            return response;
-        }
+    @Value("${aliyun.oss.endpoint}")
+    private String endpoint;
+
+    @Value("${aliyun.oss.access-key-id}")
+    private String accessKeyId;
+
+    @Value("${aliyun.oss.access-key-secret}")
+    private String accessKeySecret;
+
+    @Value("${aliyun.oss.bucket-name}")
+    private String bucketName;
+//    @PostMapping("upload")
+//    public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile multipartFile) throws IOException {
+//        String username =(String) session.getAttribute("username");
+//        if (multipartFile.isEmpty()) {
+//            throw new IllegalArgumentException("文件为空");
+//        }
+//        // 将MultipartFile转换为File
+//        File file = convertMultiPartToFile(multipartFile);
+//        // 创建OSSClient实例
+//        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+//        ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicReadWrite);
+//        // 构造PutObject请求
+//        String fileName = multipartFile.getOriginalFilename();
+//        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+//        // 上传文件
+//        ossClient.putObject(putObjectRequest);
+//        // 关闭OSSClient
+//        ossClient.shutdown();
+//        // 保存文件的访问URL
+//        String url = "https://" + bucketName + "." + endpoint + "/" + fileName;
+//        Student student =studentService.getById(username);
+//        student.setFigureUrl(url);
+//        studentService.updateById(student);
+//        Map<String, Object> response =new HashMap<>();
+//        response.put("status","success");
+//        return response;
+//    }
+
+
+    // 将MultipartFile转换为File
+    private File convertMultiPartToFile(MultipartFile file) throws IOException {
+        File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + file.getOriginalFilename());
+        FileOutputStream fos = new FileOutputStream(convFile);
+        fos.write(file.getBytes());
+        fos.close();
+        return convFile;
     }
 
     @GetMapping("imageget")

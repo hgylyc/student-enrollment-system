@@ -12,7 +12,7 @@ public class PythonRunner {
         List<Map<String, Object>> result = new ArrayList<>();
         try {
             // 调用Python脚本
-            ProcessBuilder pb = new ProcessBuilder("python", "D:/Dekstop/python/predict_report_count.py");
+            ProcessBuilder pb = new ProcessBuilder("python", "C:/Users/monster/Desktop/pro/student-enrollment-system-new/code/student-enrollment-sysytem/python/predict_report_count.py");
             Process p = pb.start();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(p.getInputStream()));

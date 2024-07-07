@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Mapper
 public interface StudentMapper extends BaseMapper<Student> {
-    @Select("SELECT native_space ,count(*) FROM student GROUP BY native_space")
+    @Select("SELECT native_space ,count(*) FROM student WHERE native_space IS NOT NULL GROUP BY native_space")
     List<Map<String, Object>> getNativeSpace();
 
     @Select("SELECT count(*) ,sum(state1),sum(state2),sum(state3) from student")

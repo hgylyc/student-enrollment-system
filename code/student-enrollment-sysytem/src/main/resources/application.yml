@@ -34,6 +34,11 @@ spring:
     url: jdbc:mysql://192.168.1.216:3306/yyk_db?characterEncoding=utf-8
     username: root
     password: gzyq2023
-
+aliyun:
+  oss:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    access-key-id: LTAI5tQNWefomvBDfCiVt4Es
+    access-key-secret: c8TFGQX0TD1SlqHLVG770VjQ98v4tB
+    bucket-name: mybucket-oss
 
 
