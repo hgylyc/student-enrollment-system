@@ -11,8 +11,12 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.List;
-@Service
 
+
+
+import java.util.Map;
+
+@Service
 public interface CourseService extends IService <Course>{
     List<Course> getCoursesByStudentAcademy(String studentId);
     boolean isCourseFull(String courseId);
@@ -29,9 +33,14 @@ public interface CourseService extends IService <Course>{
 
     Course getCourseById(String courseId);
 
+
     CourseDTO getCourseDetailsByCourseName(String courseName);
 
     List<Course> getCoursesExcludingStudentAcademy(String studentId);
 
     List<Course> getAllCourses();
+
+    //返回10个选课率最低的课程信息
+    List<Map<String, Object>> getLowestEnrollmentRateCourses();
+
 }

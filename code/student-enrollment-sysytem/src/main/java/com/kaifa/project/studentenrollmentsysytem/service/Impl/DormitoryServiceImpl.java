@@ -9,6 +9,7 @@ import com.kaifa.project.studentenrollmentsysytem.pojo.DormitoryDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -62,6 +63,8 @@ public class DormitoryServiceImpl extends ServiceImpl<DormitoryMapper, Dormitory
                 .map(studentService::convertToDTO)  // 使用 StudentService 的 convertToDTO 方法
                 .collect(Collectors.toList());
     }
-
+    public List<Map<String, Object>> myDormitory(String stuId){
+        return dormitoryMapper.myDormitory(stuId);
+    };
 }
 

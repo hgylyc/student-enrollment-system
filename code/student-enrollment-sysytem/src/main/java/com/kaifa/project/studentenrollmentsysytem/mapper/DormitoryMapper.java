@@ -52,5 +52,10 @@ public interface DormitoryMapper extends BaseMapper<Dormitory> {
                                           @Param("isFull") Integer isFull,
                                           @Param("academy") String academy,
                                           @Param("gender") String gender);
-
+        @Select("SELECT area_no, dorm_no, room_no, student_id, student_name, native_space, academy, major, class_no " +
+                "FROM student " +
+                "WHERE area_no = (SELECT area_no FROM student WHERE student_id = #{stuId}) " +
+                "AND dorm_no = (SELECT dorm_no FROM student WHERE student_id = #{stuId}) " +
+                "AND room_no = (SELECT room_no FROM student WHERE student_id = #{stuId})")
+        List<Map<String, Object>> myDormitory(@Param("stuId") String stuId);
 }

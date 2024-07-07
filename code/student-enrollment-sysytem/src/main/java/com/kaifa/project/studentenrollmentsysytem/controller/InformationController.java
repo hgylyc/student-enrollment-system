@@ -125,6 +125,9 @@ public class InformationController {
             return Result.error("用户id不存在，请重新登录", null);
         }
         Student student = studentService.getStudentById(studentId);
+        if(!(student.getAreaNo()==null)){
+            return Result.error("学生已存在宿舍", null);
+        }
         // 获取该专业和性别对应的所有宿舍
         String academy = student.getAcademy();
         String gender = student.getGender();
@@ -133,27 +136,44 @@ public class InformationController {
         return Result.success("成功", dormitoryDTOList);
     }
     //学生申请宿舍
-    @PostMapping("apply/{areano}/{dormno}/{roomno}")
-    public Result applyForDormitory(@PathVariable String areano, @PathVariable String dormno, @PathVariable String roomno, HttpSession session) {
+    @PostMapping("apply")
+    public Result applyForDormitory(@RequestParam("areaNo") String areaNo,
+                                    @RequestParam("dormNo") String dormNo,
+                                    @RequestParam("roomNo") String roomNo,
+                                    HttpSession session) {
         String studentId = (String) session.getAttribute("username");
         if (studentId == null) {
             return Result.error("用户未登录", null);
         }
         Student student = studentService.getStudentById(studentId);
-        if(!(student.getDormNo() == null || student.getDormNo().isEmpty())){
-            return Result.error("学生已有宿舍",student.getDormNo());
+        if (!(student.getDormNo() == null) && !student.getDormNo().isEmpty()) {
+            return Result.error("学生已有宿舍", student.getDormNo());
         }
-        Dormitory dormitory = dormitoryService.applyForDormitory(studentId, areano, dormno, roomno);
+        Dormitory dormitory = dormitoryService.applyForDormitory(studentId, areaNo, dormNo, roomNo);
         if (dormitory == null) {
             return Result.error("宿舍申请失败", null);
         }
         student.setState2(true);
+        studentService.updateStudent(student); // 更新学生信息
         return Result.success("宿舍申请成功", dormitory);
     }
+
+    // 查看舍友
+    @PostMapping("search")
+    public Result findStudentsByDormitory(@RequestParam("areaNo") String areaNo,
+                                          @RequestParam("dormNo") String dormNo,
+                                          @RequestParam("roomNo") String roomNo) {
+        List<Map<String, Object>> students = studentService.findStudentsByDormitory(areaNo, dormNo, roomNo);
+        if (students.isEmpty()) {
+            return Result.error("未找到匹配的学生信息", null);
+        }
+        return Result.success("查询成功", students);
+    }
+
+
 //学生的信息录入页面，负责录入除照片之外的信息
     @PostMapping("/updateStudent")
     public Result updateStudent(
-            @RequestParam(value = "studentId", required = false) String studentId,
             @RequestParam(value = "studentName", required = false) String studentName,
             @RequestParam(value = "gender", required = false) String gender,
             @RequestParam(value = "nativeSpace", required = false) String nativeSpace,
@@ -168,10 +188,10 @@ public class InformationController {
             @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "phoneNumber", required = false) String phoneNumber,
             @RequestParam(value = "major", required = false) String major,
+            @RequestParam(value = "captcha", required = false) String captcha,
             HttpSession session
     ) {
         // Check if any parameter is missing
-        if (studentId == null) return Result.error("缺少必填参数: studentId", null);
         if (studentName == null) return Result.error("缺少必填参数: studentName", null);
         if (gender == null) return Result.error("缺少必填参数: gender", null);
         if (nativeSpace == null) return Result.error("缺少必填参数: nativeSpace", null);
@@ -186,13 +206,14 @@ public class InformationController {
         if (email == null) return Result.error("缺少必填参数: email", null);
         if (phoneNumber == null) return Result.error("缺少必填参数: phoneNumber", null);
         if (academy == null) return Result.error("缺少必填参数: academy", null);
-
+        if (captcha == null) return Result.error("缺少必填参数: captcha", null);
+        String sessionCaptcha = (String) session.getAttribute("random");
+        if(!captcha.equals(sessionCaptcha)){
+            return Result.error("验证码不正确",null);
+        }
         Mapping mapping=new Mapping();
         String studentid = (String) session.getAttribute("username");
         Student student = studentService.getStudentById(studentid);
-        if(!(studentId.equals(studentid)))
-            return Result.error("学号不匹配", null);
-        student.setStudentId(studentId);
         student.setStudentName(studentName);
         student.setGender(gender);
         student.setNativeSpace(nativeSpace);
@@ -212,7 +233,7 @@ public class InformationController {
 
         boolean updateResult = studentService.updateStudentInfo(student);
         if (updateResult) {
-            return Result.success("更新成功", student);
+            return Result.success("sucess", student);
         } else {
             return Result.error("更新失败", null);
         }
@@ -267,7 +288,7 @@ public class InformationController {
             response.put("status", "file_null");
             return response;
         }
-        String UPLOAD_DIR="E:/Temp/picture/";
+        String UPLOAD_DIR="D:/Dekstop/picture/";
         String url=UPLOAD_DIR+file.getOriginalFilename();
         System.out.println(file.getName());
         System.out.println(url);

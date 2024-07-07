@@ -59,4 +59,6 @@ public interface CourseMapper extends BaseMapper<Course> {
             return sql;
         }
     }
+    @Select("SELECT * FROM course")
+    List<Course> getAllCourses();
 }

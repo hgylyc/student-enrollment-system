@@ -1,5 +1,6 @@
 package com.kaifa.project.studentenrollmentsysytem.service.Impl;
 
+import ch.qos.logback.core.joran.spi.ElementSelector;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -16,8 +17,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -29,7 +31,12 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     private StudentMapper studentMapper;
     @Override
     public Student getStudentById(String studentId) {
-        return getById(studentId);
+
+        Student student= getById(studentId);
+        String a=student.getAcademy();
+        char b=a.charAt(0);
+        student.setAcademy(Mapping.reverseMapCollege(b));
+        return student;
     }
     public DormitoryDTO convertToDTO(Dormitory dormitory) {
         DormitoryDTO dto = new DormitoryDTO();
@@ -88,6 +95,7 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
     @Override
     public List<studentManageDTO> findStudents(String studentId, String studentName, String academy) {
         List<Student> students = studentMapper.selectStudents(studentId, studentName, academy);
+
         return students.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -95,12 +103,54 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         studentManageDTO dto = new studentManageDTO();
         dto.setStudentId(student.getStudentId());
         dto.setStudentName(student.getStudentName());
-        dto.setAcademy(student.getAcademy());
+        if (student.getAcademy() == null) {
+            dto.setAcademy(student.getAcademy());}
+        else{
+            dto.setAcademy(Mapping.reverseMapCollege((student.getAcademy()).charAt(0)));
+        }
         dto.setState1(student.isState1());
         dto.setState2(student.isState2());
         dto.setState3(student.isState3());
         return dto;
     }
+    //查看舍友
+    public List<Map<String, Object>> findStudentsByDormitory(String areaNo, String dormNo, String roomNo) {
+        List<Map<String, Object>> students =studentMapper.findStudentsByDormitory(areaNo, dormNo, roomNo);
+        students.forEach(student ->{
+            String NameStr = (String)student.get("academy");
+            char a = NameStr.charAt(0);
+            student.put("Academy", Mapping.reverseMapCollege(a));
+        });
+        return students;
+    }
+    //
+    public List<Map<String, Integer>> getDailyReportCount() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<Map<String, Integer>> dailyCountList = new ArrayList<>();
+
+        for (int i = 5; i <= 9; i++) {
+            String date = LocalDate.of(2024, 7, i).format(formatter);
+            int count = studentMapper.countByDate(date);
+
+            Map<String, Integer> dailyCount = new HashMap<>();
+            dailyCount.put(date, count);
+            dailyCountList.add(dailyCount);
+        }
+
+        return dailyCountList;
+    }
+
+    public Map<String, Integer> getTodayReportCount() {
+        LocalDate today = LocalDate.now();
+        String todayDate = today.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        int count = studentMapper.countByDate(todayDate);
+
+        Map<String, Integer> response = new HashMap<>();
+        response.put(todayDate, count);
+        return response;
+    }
+
+
     public List<Map<String, Object>> getNativeSpace(){
         return studentMapper.getNativeSpace();
     };

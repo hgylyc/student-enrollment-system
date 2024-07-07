@@ -24,5 +24,10 @@ public interface StudentService extends IService<Student> {
     //studentManageDTO查询
     List<studentManageDTO> findStudents(String studentId, String studentName, String academy);
      DormitoryDTO convertToDTO(Dormitory dormitory);
+     //查看舍友
+    List<Map<String, Object>> findStudentsByDormitory(String areaNo, String dormNo, String roomNo);
+    //
+    List<Map<String, Integer>> getDailyReportCount();
+    Map<String, Integer> getTodayReportCount();
 
 }
