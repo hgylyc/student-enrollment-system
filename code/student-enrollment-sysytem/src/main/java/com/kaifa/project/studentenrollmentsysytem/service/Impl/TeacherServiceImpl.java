@@ -2,6 +2,7 @@ package com.kaifa.project.studentenrollmentsysytem.service.Impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.github.pagehelper.PageHelper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.mapper.TeacherMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDTO;
@@ -30,14 +31,12 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
         return teacher;
     }
 
-
     @Override
     public List<Teacher> getAllTeachers() {
         List<Teacher> teachers = baseMapper.selectList(null);
         System.out.println("初始化成功");
         return teachers;
     }
-
 
     @Override
     public boolean addTeacher(Teacher teacher) {
@@ -55,22 +54,6 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     public boolean updateTeacher(Teacher teacher) {
         return baseMapper.updateById(teacher) > 0;
     }
-    /*@Override
-    public boolean deleteTeacherById(String teacherId) {
-        try {
-            int result = teacherMapper.deleteById(teacherId);
-            if (result > 0) {
-                System.out.println("Teacher with ID " + teacherId + " deleted successfully.");
-            } else {
-                System.out.println("Failed to delete teacher with ID " + teacherId);
-            }
-            return result > 0;
-        } catch (Exception e) {
-            // Log the exception
-            System.err.println("Exception occurred while deleting teacher: " + e.getMessage());
-            return false;
-        }
-    }*/
 
     @Override
     public boolean deleteTeacherById(String teacherId) {
@@ -79,7 +62,29 @@ public class TeacherServiceImpl extends ServiceImpl<TeacherMapper, Teacher> impl
     }
 
     @Override
-    public List<Teacher> findTeachers(TeacherDTO filter) {
-        return teacherMapper.selectTeachers(filter);
+    public List<Teacher> findTeachers(TeacherDTO filter, int currentPage, int pageSize) {
+        PageHelper.startPage(currentPage, pageSize);  // 启动分页
+        return teacherMapper.selectFilteredTeachers(filter);
+    }
+
+    @Override
+    public int selectCount() {
+        return teacherMapper.countAllTeachers();
+    }
+
+    @Override
+    public List<Teacher> selectTeacherByArray(int currentPage, int pageSize) {
+        PageHelper.startPage(currentPage, pageSize);  // 启动分页
+        return teacherMapper.selectTeacherFindAll();
+    }
+
+    @Override
+    public int getTotalTeacherCount() {
+        return teacherMapper.countAllTeachers(); // 实现计数查询
+    }
+
+    @Override
+    public int countFilteredTeachers(TeacherDTO teacherDTO) {
+        return teacherMapper.countFilteredTeachers(teacherDTO);
     }
 }

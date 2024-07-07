@@ -45,5 +45,5 @@ public interface CourseService extends IService <Course>{
     //返回10个选课率最低的课程信息
     List<Map<String, Object>> getLowestEnrollmentRateCourses();
 
-    void updateTeacherNameInCourses(String teacherId, String teacherName);
+    void updateTeacherNameInCourse(String teacherId, String teacherName);
 }

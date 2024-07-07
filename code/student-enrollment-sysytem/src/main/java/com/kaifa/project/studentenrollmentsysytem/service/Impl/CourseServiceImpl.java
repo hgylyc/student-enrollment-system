@@ -235,8 +235,8 @@ public class CourseServiceImpl extends ServiceImpl <CourseMapper, Course> implem
     }
 
     @Override
-    public void updateTeacherNameInCourses(String teacherId, String newTeacherName) {
-        courseMapper.updateTeacherNameInCourses(teacherId, newTeacherName);
+    public void updateTeacherNameInCourse(String teacherId, String newTeacherName) {
+        courseMapper.updateTeacherNameInCourse(teacherId, newTeacherName);
     }
 
     @Override

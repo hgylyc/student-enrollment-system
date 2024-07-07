@@ -22,10 +22,10 @@ public class ScheduleController {
     private CourseTimeService courseTimeService;
 
     @GetMapping
-    public ResponseEntity<String[][]> generateSchedule(/*HttpSession session*/) {
+    public ResponseEntity<String[][]> generateSchedule(HttpSession session) {
         // 获取当前登录学生的 StudentId
-        // String studentId = (String) session.getAttribute("username");
-        String studentId = "20221443";
+        String studentId = (String) session.getAttribute("username");
+        //String studentId = "20221443";
         // 初始化一个6*7的课程表数组
         String[][] schedule = new String[6][7];
         // 查询该学生已选择的课程

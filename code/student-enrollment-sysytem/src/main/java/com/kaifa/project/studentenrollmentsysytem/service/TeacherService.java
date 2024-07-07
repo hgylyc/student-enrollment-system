@@ -15,5 +15,14 @@ public interface TeacherService extends IService<Teacher> {
     boolean addTeacher(Teacher teacher);
     boolean updateTeacher(Teacher teacher);
     boolean deleteTeacherById(String teacherId);
-    public List<Teacher> findTeachers(TeacherDTO filter);
+    List<Teacher> findTeachers(TeacherDTO filter, int currentPage, int pageSize); // 修改接口方法
+
+    int selectCount();
+
+    List<Teacher> selectTeacherByArray(int currentPage,int pageSize);
+
+
+    public int getTotalTeacherCount();
+
+    int countFilteredTeachers(TeacherDTO teacherDTO);
 }

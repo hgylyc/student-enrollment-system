@@ -1,5 +1,7 @@
 package com.kaifa.project.studentenrollmentsysytem.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Teacher;
 import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDTO;
 import com.kaifa.project.studentenrollmentsysytem.pojo.TeacherDetailsDTO;
@@ -8,6 +10,8 @@ import com.kaifa.project.studentenrollmentsysytem.service.ImgseService;
 import com.kaifa.project.studentenrollmentsysytem.service.TeacherService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,16 +32,21 @@ public class TeacherInfoManagementController {
     private HttpSession session;
     @Autowired
     private CourseService courseService;
-    @GetMapping
-    public Object getAllTeachersForAdm() {
-        // 判断角色是否为老师
-        /*Object role = session.getAttribute("role");*/
-        Object role = "teacher";
-        if (role == null || !role.equals("teacher")) {
-            return "Unauthorized"; // 或者根据需求返回其他信息或处理方式
+    @PostMapping
+    public ResponseEntity<?> getAllTeachersForStu(@RequestParam(value = "currentPage", defaultValue = "1") int currentPage,
+                                                  @RequestParam(value = "pageSize", defaultValue = "10") int pageSize) {
+        PageHelper.startPage(currentPage, pageSize); // 启动分页
+        List<Teacher> list = teacherService.getAllTeachers();
+        PageInfo<Teacher> pageInfo = new PageInfo<>(list); // 获取分页信息
+        if (list == null || list.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("访问出错或无数据");
+        } else {
+            System.out.println("分页成功");
+            Map<String, Object> response = new HashMap<>();
+            response.put("teachers", pageInfo.getList());
+            response.put("total", pageInfo.getTotal());
+            return ResponseEntity.ok(response);
         }
-        System.out.println("管理端初始化成功");
-        return teacherService.getAllTeachers();
     }
     @Autowired
     private TeacherService teacherService;
@@ -53,7 +62,7 @@ public class TeacherInfoManagementController {
     }*/
     // 获取教师详细信息，包括照片
     @PostMapping("/teacherDetails")
-    public TeacherDetailsDTO getTeacherDetails(@RequestParam String teacherId/*, HttpSession session*/) {
+    public TeacherDetailsDTO getTeacherDetails(@RequestParam String teacherId) {
         Teacher teacher = teacherService.getById(teacherId);
         TeacherDetailsDTO teacherDetailsDTO = new TeacherDetailsDTO();
         teacherDetailsDTO.setTitle(teacher.getTitle());
@@ -66,19 +75,14 @@ public class TeacherInfoManagementController {
         /*String url =new String();
         url=teacher.getFigureUrl();
         Path imagePath = Paths.get(url);*/
-
-
         // 指定图片文件路径
         /*Path imagePath = Paths.get(url);
         // 读取图片文件为字节数组
         byte[] imageBytes = Files.readAllBytes(imagePath);*/
-
 //        teacherDetailsDTO.setImageBytes(imageBytes);
-
         System.out.println("管理端详细信息成功"+teacherId);
         return teacherDetailsDTO;
     }
-
     //详细信息内编辑
     @PostMapping("/EditTeacherDetail")
     public String editTeacherDetail(@RequestParam("teacherId") String teacherId,
@@ -92,21 +96,17 @@ public class TeacherInfoManagementController {
         if (existingTeacher != null) {
             // 记录旧的教师名称
             String oldTeacherName = existingTeacher.getTeacherName();
-
-            if (tacademy != null) existingTeacher.setTacademy(tacademy);
-            if (title != null) existingTeacher.setTitle(title);
-            if (temail != null) existingTeacher.setTemail(temail);
-            if (introduction != null) existingTeacher.setIntroduction(introduction);
-            if (figureUrl != null) existingTeacher.setFigureUrl(figureUrl);
-            if (teacherName != null) existingTeacher.setTeacherName(teacherName);
-
+            if (tacademy != null&&!tacademy.isEmpty()) existingTeacher.setTacademy(tacademy);
+            if (title != null&&!title.isEmpty()) existingTeacher.setTitle(title);
+            if (temail != null&&!temail.isEmpty()) existingTeacher.setTemail(temail);
+            if (introduction != null&&!introduction.isEmpty()) existingTeacher.setIntroduction(introduction);
+            if (figureUrl != null&&!figureUrl.isEmpty()) existingTeacher.setFigureUrl(figureUrl);
+            if (teacherName != null&&!teacherName.isEmpty()) existingTeacher.setTeacherName(teacherName);
             boolean res = teacherService.updateTeacher(existingTeacher);
-
             if (res && teacherName != null && !teacherName.equals(oldTeacherName)) {
 
-                courseService.updateTeacherNameInCourses(teacherId, teacherName);
+                courseService.updateTeacherNameInCourse(teacherId, teacherName);
             }
-
             return res ? "Teacher updated successfully" : "Failed to update teacher";
         } else {
             return "Teacher not found";
@@ -118,7 +118,6 @@ public class TeacherInfoManagementController {
         if (teacherId == null || teacherId.isEmpty()) {
             return "Teacher ID is required";
         }
-
         // 删除教师信息
         boolean res = teacherService.deleteTeacherById(teacherId);
         return res ? "Teacher deleted successfully" : "Failed to delete teacher";
@@ -162,17 +161,15 @@ public class TeacherInfoManagementController {
         boolean res = teacherService.addTeacher(t);
         return res ? "Teacher added successfully" : "Failed to add teacher";
     }
-    //检索
+    //筛选
     @PostMapping("/filterTeachers")
-    public List<TeacherDTO> findTeachers(
+    public ResponseEntity<?> findTeachers(
             @RequestParam(required = false) String teacherId,
             @RequestParam(required = false) String teacherName,
             @RequestParam(required = false) String tacademy,
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String introduction,
-            @RequestParam(required = false) String figureUrl,
-            @RequestParam(required = false) String temail,
-            @RequestParam(required = false) String institution) {
+            @RequestParam("currentPage") int currentPage,
+            @RequestParam("pageSize") int pageSize) {
+
         // 如果 teacherName 不为空，则进行模糊查询处理
         if (teacherName != null && !teacherName.isEmpty()) {
             teacherName = "%" + teacherName + "%";
@@ -182,31 +179,41 @@ public class TeacherInfoManagementController {
         teacherDTO.setTeacherId(teacherId);
         teacherDTO.setTeacherName(teacherName);
         teacherDTO.setTacademy(tacademy);
-        teacherDTO.setTitle(title);
-        teacherDTO.setIntroduction(introduction);
-        teacherDTO.setFigureUrl(figureUrl);
-        teacherDTO.setTemail(temail);
 
-        List<Teacher> list = teacherService.findTeachers(teacherDTO);
-        return list.stream().map(TeacherDTO::new).collect(Collectors.toList());
+        // 启动分页
+        PageHelper.startPage(currentPage, pageSize);
+        List<Teacher> list = teacherService.findTeachers(teacherDTO, currentPage, pageSize);
+        PageInfo<Teacher> pageInfo = new PageInfo<>(list);
+        int total = teacherService.countFilteredTeachers(teacherDTO);
+        System.out.println("total: " + total);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("teachers", pageInfo.getList().stream().map(TeacherDTO::new).collect(Collectors.toList()));
+        response.put("total", String.valueOf(total)); // 将 total 转换为字符串
+
+        return ResponseEntity.ok(response);
     }
     //照片上传
     @PostMapping("/Addteacher/uploadTeacherPhoto")
-    public Map<String, Object> uploadTeacherPhoto(/*HttpSession session,*/ @RequestParam("file") MultipartFile file) {
-        //String username = (String) session.getAttribute("username");
-        String username = "10000000";
+    public Map<String, Object> uploadTeacherPhoto(HttpSession session,@RequestParam(value = "file", required = false) MultipartFile file) {
+        String username = (String) session.getAttribute("username");
         Map<String, Object> response = new HashMap<>();
-        if (file.isEmpty()) {
-            response.put("status", "file_null");
+
+        // 检查文件是否为空或者文件名是否为空
+        if (file == null || file.isEmpty() || file.getOriginalFilename() == null || file.getOriginalFilename().trim().isEmpty()) {
+            response.put("status", "success");
+            response.put("message", "No file uploaded, keeping the original file.");
             return response;
         }
-        String UPLOAD_DIR = "C:/Users/Xia/Desktop/教师图片";
-        String url = UPLOAD_DIR + file.getOriginalFilename();
+
+        String UPLOAD_DIR = "C:/Users/Xia/Desktop/教师图片/";
+        String fileName = file.getOriginalFilename();
+        String url = UPLOAD_DIR + fileName;
+
         System.out.println(file.getName());
         System.out.println(url);
+
         try {
-            // 获取文件名
-            String fileName = file.getOriginalFilename();
             // 创建目标文件
             File dest = new File(UPLOAD_DIR, fileName);
             // 保存文件到目标位置
@@ -218,12 +225,14 @@ public class TeacherInfoManagementController {
             teacherService.updateById(teacher);
 
             response.put("status", "success");
-            return response;
+            response.put("message", "File uploaded successfully.");
         } catch (IOException e) {
             e.printStackTrace();
-            response.put("status", "fail:" + e.getMessage());
-            return response;
+            response.put("status", "fail");
+            response.put("message", "Error: " + e.getMessage());
         }
+
+        return response;
     }
     //创建教师
     /*@PostMapping("/Addteacher")
@@ -316,7 +325,5 @@ public class TeacherInfoManagementController {
         boolean res = teacherService.addTeacher(t);
         return res ? "Teacher added successfully" : "Failed to add teacher";
     }*/
-
-
 
 }
