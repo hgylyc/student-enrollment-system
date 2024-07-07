@@ -52,7 +52,9 @@ public class Course {
         this.ceilingOfPersonnel=courseCreate.ceilingOfPersonnel;
         this.courseType=courseCreate.courseType;
         this.score=courseCreate.score;
-        this.status="未开始";
+        this.status=courseCreate.status;
         this.introduction=courseCreate.introduction ;
+        this.classRoomNo=courseCreate.classRoomNo;
+        this.time = courseCreate.time;
     }
 }

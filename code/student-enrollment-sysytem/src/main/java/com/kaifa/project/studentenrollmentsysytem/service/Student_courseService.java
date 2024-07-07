@@ -14,4 +14,6 @@ public interface Student_courseService extends IService<Student_course> {
     List<CourseDTO> getSelectedCourses(String studentId);
 
     void dropCourse(String studentId, String courseId);
+
+    public List<String> getSelectedCourseIdsByStudentId(String studentId);
 }

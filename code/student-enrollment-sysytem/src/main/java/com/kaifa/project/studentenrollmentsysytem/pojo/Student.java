@@ -14,7 +14,7 @@ public class Student {
     private String gender;
     @TableField("native_space")
     private String nativeSpace;
-    @TableId("student_id")
+    @TableId(type=IdType.NONE,value = "student_id")
     private String studentId;
 
     @TableField("class_no")

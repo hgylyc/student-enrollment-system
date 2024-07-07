@@ -18,6 +18,9 @@ import java.util.stream.Collectors;
 public class Student_courseServiceImpl extends ServiceImpl<Student_courseMapper, Student_course> implements Student_courseService {
     @Autowired
     public CourseMapper courseMapper;
+
+    @Autowired
+    public Student_courseMapper student_courseMapper;
     @Override
     public boolean isCourseSelectByStu(String studentId, String courseId) {
         return baseMapper.selectOne(new QueryWrapper<Student_course>()
@@ -33,19 +36,25 @@ public class Student_courseServiceImpl extends ServiceImpl<Student_courseMapper,
     @Override
     public List<CourseDTO> getSelectedCourses(String studentId) {
         List<Student_course> studentCourses = getStudentSchedule(studentId);
-        return studentCourses.stream()
+        System.out.println("Student courses (raw): " + studentCourses); // 调试日志，输出学生课程的原始数据
+
+        List<CourseDTO> selectedCourses = studentCourses.stream()
                 .map(sc -> {
                     Course course = courseMapper.selectById(sc.getCourseId());
                     // 检查 course 是否为空
                     if (course != null) {
+                        System.out.println("Course found for courseId: " + sc.getCourseId()); // 调试日志
                         return new CourseDTO(course);
                     } else {
-                        // 根据需求处理 course 为空的情况
+                        System.out.println("Course not found for courseId: " + sc.getCourseId()); // 调试日志
                         return null;
                     }
                 })
                 .filter(courseDTO -> courseDTO != null) // 过滤掉空的 courseDTO
                 .collect(Collectors.toList());
+
+        System.out.println("Selected courses (filtered): " + selectedCourses); // 调试日志，输出过滤后的课程数据
+        return selectedCourses;
     }
 
     @Override
@@ -53,5 +62,10 @@ public class Student_courseServiceImpl extends ServiceImpl<Student_courseMapper,
         baseMapper.delete(new QueryWrapper<Student_course>()
                 .eq("student_id", studentId)
                 .eq("course_id", courseId));
+    }
+
+    @Override
+    public List<String> getSelectedCourseIdsByStudentId(String studentId) {
+        return student_courseMapper.getSelectedCourseIdsByStudentId(studentId);
     }
 }

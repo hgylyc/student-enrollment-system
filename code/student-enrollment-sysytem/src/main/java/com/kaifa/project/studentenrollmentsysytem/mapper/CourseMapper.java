@@ -16,6 +16,8 @@ import java.util.List;
 public interface CourseMapper extends BaseMapper<Course> {
     @SelectProvider(type = CourseSqlBuilder.class, method = "buildSelectCourses")
     List<Course> selectCourses(@Param("filter") CourseDTO filter);
+    @Select("SELECT * FROM course WHERE academy = #{studentId}")
+    List<Course> getCoursesByStudentAcademy(String studentId);
 
     class CourseSqlBuilder {
         public static String buildSelectCourses(@Param("filter") final CourseDTO filter) {
@@ -49,7 +51,10 @@ public interface CourseMapper extends BaseMapper<Course> {
                     WHERE("score = #{filter.score}");
                 }
                 if (filter.getFilled() != null && filter.getFilled()) {
-                    WHERE("ceiling_of_personnel < current_num_of_stu");
+                    WHERE("ceiling_of_personnel <= current_num_of_stu");
+                }
+                if(filter.getFilled() != null && !filter.getFilled()){
+                    WHERE("ceiling_of_personnel > current_num_of_stu");
                 }
             }}.toString();
 

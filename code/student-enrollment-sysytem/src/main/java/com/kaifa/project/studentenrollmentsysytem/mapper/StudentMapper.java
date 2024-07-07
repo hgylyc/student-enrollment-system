@@ -19,7 +19,7 @@ public interface StudentMapper extends BaseMapper<Student> {
     @Select("SELECT count(*) ,sum(state1),sum(state2),sum(state3) from student")
     List<Map<String, Object>> getProcessState();
 
-    @Select("SELECT DATE(time_node) AS date_only, COUNT(*) FROM student GROUP BY date_only")
+    @Select("SELECT DATE(time_node) AS date_only, COUNT(*) FROM student WHERE DATE(time_node) IS NOT NULL GROUP BY date_only")
     List<Map<String, Object>> getTimeNode();
 
     @Select("SELECT state1,state2,state3 FROM student WHERE student_id = #{stuId}")
@@ -46,6 +46,11 @@ public interface StudentMapper extends BaseMapper<Student> {
     List<Student> selectStudents(@Param("studentId") String studentId,
                                  @Param("studentName") String studentName,
                                  @Param("academy") String academy);
+
+
+    @Select("SELECT academy FROM student WHERE student_id = #{studentId}")
+    String getAcademyByStudentId(@Param("studentId") String studentId);
+
 
     @Select("SELECT student_id AS studentId, student_name AS studentName, native_space AS nativeSpace, academy AS academy, major AS major, class_no AS classNo FROM student WHERE area_no = #{areaNo} AND dorm_no = #{dormNo} AND room_no = #{roomNo}")
     List<Map<String, Object>> findStudentsByDormitory(@Param("areaNo") String areaNo, @Param("dormNo") String dormNo, @Param("roomNo") String roomNo);

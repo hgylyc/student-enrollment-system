@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Info Query Test</title>
+</head>
+<body>
+<h1>Teacher Info Query Test</h1>
+
+<!-- Get All Teachers -->
+<h2>Get All Teachers</h2>
+<form id="getAllTeachersForm" method="get" action="/StuInfo">
+    <button type="submit">Get All Teachers</button>
+</form>
+<br>
+
+<!-- Search Teacher by Name -->
+<h2>Search Teacher by Name</h2>
+<form id="searchTeacherForm" method="post" action="/StuInfo/Ssearch">
+    <label for="teacherName">Teacher Name:</label>
+    <input type="text" id="teacherName" name="teacherName" required>
+    <button type="submit">Search</button>
+</form>
+<br>
+
+<!-- Filter Teachers -->
+<h2>Filter Teachers</h2>
+<form id="filterTeachersForm" method="post" action="/StuInfo/filterTeachers">
+    <label for="teacherId">Teacher ID:</label>
+    <input type="text" id="teacherId" name="teacherId">
+    <br>
+    <label for="teacherNameFilter">Teacher Name:</label>
+    <input type="text" id="teacherNameFilter" name="teacherName">
+    <br>
+    <label for="tacademy">Academy:</label>
+    <input type="text" id="tacademy" name="tacademy">
+    <br>
+    <label for="title">Title:</label>
+    <input type="text" id="title" name="title">
+    <br>
+    <label for="introduction">Introduction:</label>
+    <input type="text" id="introduction" name="introduction">
+    <br>
+    <label for="figureUrl">Figure URL:</label>
+    <input type="text" id="figureUrl" name="figureUrl">
+    <br>
+    <label for="temail">Email:</label>
+    <input type="email" id="temail" name="temail">
+    <br>
+    <label for="institution">Institution:</label>
+    <input type="text" id="institution" name="institution">
+    <br>
+    <button type="submit">Filter</button>
+</form>
+<br>
+
+<!-- Get Teacher Details -->
+<h2>Get Teacher Details</h2>
+<form id="teacherDetailsForm" method="post" action="/StuInfo/teacherDetails">
+    <label for="teacherIdDetails">Teacher ID:</label>
+    <input type="text" id="teacherIdDetails" name="teacherId" required>
+    <button type="submit">Get Details</button>
+</form>
+<br>
+
+<script>
+    // Handle form submissions to display results on the same page
+    document.getElementById('getAllTeachersForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const response = await fetch(this.action);
+        const data = await response.json();
+        console.log(data);
+        alert(JSON.stringify(data, null, 2));
+    };
+
+    document.getElementById('searchTeacherForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        alert(JSON.stringify(data, null, 2));
+    };
+
+    document.getElementById('filterTeachersForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        alert(JSON.stringify(data, null, 2));
+    };
+
+    document.getElementById('teacherDetailsForm').onsubmit = async function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+        const response = await fetch(this.action, {
+            method: 'POST',
+            body: new URLSearchParams(formData)
+        });
+        const data = await response.json();
+        console.log(data);
+        alert(JSON.stringify(data, null, 2));
+    };
+</script>
+</body>
+</html>

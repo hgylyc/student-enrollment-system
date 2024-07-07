@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Chat</title>
+</head>
+<body>
+<h2>Teacher Chat</h2>
+<div id="chatWindow"></div>
+<input type="text" id="messageInput" placeholder="Type a message">
+<button id="sendButton">Send</button>
+
+<script>
+  const chatWindow = document.getElementById('chatWindow');
+  const messageInput = document.getElementById('messageInput');
+  const sendButton = document.getElementById('sendButton');
+  let currentStudentId = '';
+
+  const socket = new WebSocket('ws://your_server_url/chat');
+
+  socket.onmessage = function(event) {
+    const [studentId, messageContent] = event.data.split(':');
+    currentStudentId = studentId;
+
+    const message = document.createElement('p');
+    message.textContent = `${studentId}: ${messageContent}`;
+    chatWindow.appendChild(message);
+  };
+
+  sendButton.addEventListener('click', function() {
+    const message = `${currentStudentId}:${messageInput.value}`;
+    socket.send(message);
+    messageInput.value = '';
+  });
+</script>
+</body>
+</html>
