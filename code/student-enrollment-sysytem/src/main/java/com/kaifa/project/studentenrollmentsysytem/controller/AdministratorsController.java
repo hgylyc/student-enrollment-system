@@ -92,12 +92,6 @@ public class AdministratorsController {
 
     }
 
-    @GetMapping("test")
-    public Map<String, Integer> test(){
-        Map<String, Integer> getTodayReportCount=studentService.getTodayReportCount();
-        return getTodayReportCount;
-    }
-
     @GetMapping("/table1")
     public Map<String, Object> getData1() {
         Map<String, Object> response=new HashMap<>();
@@ -256,11 +250,11 @@ public class AdministratorsController {
         int count = entry.getValue();
         String reportedToday = Integer.toString(count);
 
-        System.out.println(reportedToday);
-        System.out.println(getTodayReportCount.get(""));
+        Map<String, Object> todayReportCount = PythonRunner.getTodayPrediction();
+        String predictedToday =todayReportCount.get("predicted_count").toString();
         Map<String, Object> response =new HashMap<>();
         response.put("reportedToday",reportedToday);
-        response.put("predictedToday","119910");
+        response.put("predictedToday",predictedToday);
         return response;
     }
 
