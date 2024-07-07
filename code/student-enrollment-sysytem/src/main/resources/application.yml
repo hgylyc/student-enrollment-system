@@ -39,6 +39,6 @@ aliyun:
     endpoint: oss-cn-beijing.aliyuncs.com
     access-key-id: LTAI5tQNWefomvBDfCiVt4Es
     access-key-secret: c8TFGQX0TD1SlqHLVG770VjQ98v4tB
-    bucket-name: mybucket-oss
+    bucket-name: hgylyc
 
 

@@ -299,33 +299,33 @@ public class InformationController {
 
     @Value("${aliyun.oss.bucket-name}")
     private String bucketName;
-//    @PostMapping("upload")
-//    public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile multipartFile) throws IOException {
-//        String username =(String) session.getAttribute("username");
-//        if (multipartFile.isEmpty()) {
-//            throw new IllegalArgumentException("文件为空");
-//        }
-//        // 将MultipartFile转换为File
-//        File file = convertMultiPartToFile(multipartFile);
-//        // 创建OSSClient实例
-//        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
-//        ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicReadWrite);
-//        // 构造PutObject请求
-//        String fileName = multipartFile.getOriginalFilename();
-//        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
-//        // 上传文件
-//        ossClient.putObject(putObjectRequest);
-//        // 关闭OSSClient
-//        ossClient.shutdown();
-//        // 保存文件的访问URL
-//        String url = "https://" + bucketName + "." + endpoint + "/" + fileName;
-//        Student student =studentService.getById(username);
-//        student.setFigureUrl(url);
-//        studentService.updateById(student);
-//        Map<String, Object> response =new HashMap<>();
-//        response.put("status","success");
-//        return response;
-//    }
+    @PostMapping("upload")
+    public Map<String, Object> upload(HttpSession session , @RequestParam("file") MultipartFile multipartFile) throws IOException {
+        String username =(String) session.getAttribute("username");
+        if (multipartFile.isEmpty()) {
+            throw new IllegalArgumentException("文件为空");
+        }
+        // 将MultipartFile转换为File
+        File file = convertMultiPartToFile(multipartFile);
+        // 创建OSSClient实例
+        OSS ossClient = new OSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+        ossClient.setBucketAcl(bucketName, CannedAccessControlList.PublicReadWrite);
+        // 构造PutObject请求
+        String fileName = multipartFile.getOriginalFilename();
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file);
+        // 上传文件
+        ossClient.putObject(putObjectRequest);
+        // 关闭OSSClient
+        ossClient.shutdown();
+        // 保存文件的访问URL
+        String url = "https://" + bucketName + "." + endpoint + "/" + fileName;
+        Student student =studentService.getById(username);
+        student.setFigureUrl(url);
+        studentService.updateById(student);
+        Map<String, Object> response =new HashMap<>();
+        response.put("status","success");
+        return response;
+    }
 
 
     // 将MultipartFile转换为File
