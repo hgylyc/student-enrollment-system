@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.kaifa.project.studentenrollmentsysytem.mapper.DormitoryMapper;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Dormitory;
 import com.kaifa.project.studentenrollmentsysytem.pojo.DormitoryDTO;
+import com.kaifa.project.studentenrollmentsysytem.pojo.Mapping;
 import com.kaifa.project.studentenrollmentsysytem.pojo.Student;
 import com.kaifa.project.studentenrollmentsysytem.service.DormitoryService;
 import com.kaifa.project.studentenrollmentsysytem.service.StudentService;
@@ -66,5 +67,16 @@ public class DormitoryServiceImpl extends ServiceImpl<DormitoryMapper, Dormitory
     public List<Map<String, Object>> myDormitory(String stuId){
         return dormitoryMapper.myDormitory(stuId);
     };
+    //查找宿舍
+    @Override
+    public Dormitory getDormitory(String areano, String dormno, String roomno) {
+        return dormitoryMapper.selectByDormitory(areano, dormno, roomno);
+    }
+    //删除宿舍
+    @Override
+    public boolean deleteDormitory(String areano, String dormno, String roomno) {
+        int result = dormitoryMapper.deleteByDormitory(areano, dormno, roomno);
+        return result > 0;
+    }
 }
 

@@ -149,7 +149,16 @@ public class StudentServiceImpl extends ServiceImpl<StudentMapper,Student> imple
         response.put(todayDate, count);
         return response;
     }
-
+    @Override
+    public List<Map<String, Object>> findStusByDormitory(String areano, String dormno, String roomno) {
+        List<Map<String, Object>> students=studentMapper.findStusByDormitory(areano, dormno, roomno);
+        students.forEach(student ->{
+            String NameStr = (String)student.get("academy");
+            char a = NameStr.charAt(0);
+            student.put("Academy", Mapping.reverseMapCollege(a));
+        });
+        return students;
+    }
 
     public List<Map<String, Object>> getNativeSpace(){
         return studentMapper.getNativeSpace();
